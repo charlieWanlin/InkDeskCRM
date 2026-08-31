@@ -9,6 +9,7 @@ import { Select } from '../../shared/ui/select';
 import { EmptyState } from '../../shared/ui/empty-state';
 import { ListToolbar } from '../../shared/ui/list-toolbar';
 import { ViewToggle } from '../../shared/ui/view-toggle';
+import { Pagination } from '../../shared/pagination/pagination';
 import { ClientCards } from './components/client-cards/client-cards';
 import { ClientFormModal } from './components/client-form-modal/client-form-modal';
 import { ClientDeleteModal } from './components/client-delete-modal/client-delete-modal';
@@ -28,6 +29,7 @@ import { Client, CLIENT_STYLES, toClient } from './models/client.model';
     EmptyState,
     ListToolbar,
     ViewToggle,
+    Pagination,
     ClientCards,
     ClientFormModal,
     ClientDeleteModal,
@@ -62,9 +64,21 @@ export class Clients {
   private _error = signal(false);
 
   clients = this._clients.asReadonly();
-  displayedClients = this._clients.asReadonly();
   isLoading = this._loading.asReadonly();
   isError = this._error.asReadonly();
+
+  // L'API renvoie la liste filtrée complète : on la découpe ici, 8 clients par page.
+  pageSize = 8;
+  page = signal(1);
+  totalPages = computed(() => Math.max(1, Math.ceil(this._clients().length / this.pageSize)));
+  indexDebut = computed(() =>
+    this._clients().length === 0 ? 0 : (this.page() - 1) * this.pageSize + 1,
+  );
+  indexFin = computed(() => Math.min(this.page() * this.pageSize, this._clients().length));
+  displayedClients = computed(() => {
+    const debut = (this.page() - 1) * this.pageSize;
+    return this._clients().slice(debut, debut + this.pageSize);
+  });
 
   newThisMonth = computed(() => {
     const d = new Date();
@@ -73,8 +87,11 @@ export class Clients {
   });
 
   constructor() {
-
-    toObservable(this.filters).subscribe((filtres) => this.charger(filtres));
+    // Tout changement de filtre relance la requête et ramène l'utilisateur en page 1.
+    toObservable(this.filters).subscribe((filtres) => {
+      this.page.set(1);
+      this.charger(filtres);
+    });
   }
 
   private charger(filters = this.filters()) {

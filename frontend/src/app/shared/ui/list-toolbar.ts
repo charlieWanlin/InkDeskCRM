@@ -13,6 +13,7 @@ import { SearchInput } from './search-input';
   `,
 })
 export class ListToolbar {
-  search = model('');
+  // un model avec angular permet de créer une liaison bidirectionnelle avec l'input de recherche.
+  search = model(''); 
   placeholder = input('Rechercher…');
 }

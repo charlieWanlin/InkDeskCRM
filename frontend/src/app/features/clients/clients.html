@@ -47,7 +47,7 @@
           <app-button variant="secondary" (click)="reload()">Réessayer</app-button>
         </app-empty-state>
       </div>
-    } @else if (displayedClients().length === 0) {
+    } @else if (clients().length === 0) {
       <div class="p-6">
         <app-empty-state
           icon="search"
@@ -65,6 +65,17 @@
         [view]="view()"
         (edit)="openEdit($event)"
         (remove)="requestDelete($event)"
+      />
+    }
+
+    @if (displayedClients().length > 0) {
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [indexDebut]="indexDebut()"
+        [indexFin]="indexFin()"
+        [total]="clients().length"
+        (pageChange)="page.set($event)"
       />
     }
   </section>
