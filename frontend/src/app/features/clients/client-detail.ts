@@ -55,6 +55,7 @@ export class ClientDetail {
   id = input.required<string>();
 
   client = signal<ClientJson | null>(null);
+  introuvable = signal(false);
   modalOuvert = signal(false);
 
   // Activité réelle du client, chargée depuis l'API (vide tant qu'il n'a rien).
@@ -78,9 +79,17 @@ export class ClientDetail {
   }
 
   private charger(id: number) {
-    this.clientService.get(id).subscribe((c) => {
-      this.client.set(c);
-      this.chargerActivite(c);
+    this.introuvable.set(false);
+    this.clientService.get(id).subscribe({
+      next: (c) => {
+        this.client.set(c);
+        this.chargerActivite(c);
+      },
+      // 404 : la fiche n'existe pas, ou elle appartient a un autre utilisateur.
+      error: () => {
+        this.client.set(null);
+        this.introuvable.set(true);
+      },
     });
   }
 
