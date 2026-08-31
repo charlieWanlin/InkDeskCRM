@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Transmet l'en-tête Authorization à PHP (Apache le retire par défaut),
+# indispensable pour lire le jeton JWT "Bearer ...".
+RewriteCond %{HTTP:Authorization} .
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Si le fichier/dossier demandé n'existe pas physiquement,
+# on redirige tout vers index.php (Front Controller).
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
