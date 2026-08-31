@@ -1,0 +1,51 @@
+# ===========================================================================
+# .gitignore — CRM Tatooshop (monorepo : frontend Angular + backend PHP)
+# ===========================================================================
+
+# --- Dépendances ---
+**/node_modules/
+**/vendor/
+
+# --- Sorties de build / cache ---
+**/dist/
+**/out-tsc/
+**/.angular/cache/
+/frontend/.angular/
+
+# --- Environnement & secrets (NE JAMAIS committer) ---
+**/.env
+**/.env.local
+**/.env.*.local
+
+# --- Tests ---
+**/coverage/
+/frontend/playwright-report/
+/frontend/test-results/
+
+# --- Fichiers uploadés par les utilisateurs (on garde le dossier, pas le contenu) ---
+/backend/public/uploads/**
+!/backend/public/uploads/
+!/backend/public/uploads/**/
+!/backend/public/uploads/**/.gitkeep
+!/backend/public/uploads/**/.gitignore
+
+# --- Documentation lourde (schémas, mockups) : hors dépôt ---
+# On exclut le contenu de /docs, sauf les captures utilisées par le README.
+/docs/*
+!/docs/screenshots/
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# --- Système & éditeurs ---
+.DS_Store
+Thumbs.db
+.idea/
+**/.vscode/
+!.vscode/extensions.json
+*.sublime-workspace
+
+# --- Divers ---
+/tmp
