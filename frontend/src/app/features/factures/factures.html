@@ -1,0 +1,193 @@
+<div class="p-6">
+  <app-page-header
+    title="Factures"
+    [subtitle]="factures().length + ' factures · ' + enRetard() + ' en retard'"
+  >
+    <app-button variant="primary" routerLink="/factures/nouveau">
+      <app-icon name="plus" [size]="16" /> Nouvelle facture
+    </app-button>
+  </app-page-header>
+
+  <app-list-toolbar [(search)]="recherche" placeholder="Rechercher une facture…">
+    <app-view-toggle [(vue)]="vue" />
+  </app-list-toolbar>
+
+  <section class="overflow-hidden rounded-2xl border border-border bg-surface">
+    <app-filter-bar>
+      <app-select [(value)]="statutFilter">
+        <option value="">Tous les statuts</option>
+        <option value="Brouillon">Brouillons</option>
+        <option value="En attente">En attente</option>
+        <option value="Payée">Payées</option>
+        <option value="En retard">En retard</option>
+      </app-select>
+      <app-select [(value)]="tri">
+        <option value="recent">Plus récents</option>
+        <option value="ancien">Plus anciens</option>
+        <option value="montant_desc">Montant décroissant</option>
+        <option value="montant_asc">Montant croissant</option>
+      </app-select>
+    </app-filter-bar>
+
+    @if (facturesPage().length === 0) {
+      <div class="p-6">
+        <app-empty-state
+          icon="search"
+          title="Aucune facture trouvée"
+          subtitle="Aucun résultat ne correspond à votre recherche ou à vos filtres."
+        >
+          <app-button variant="primary" routerLink="/factures/nouveau">
+            <app-icon name="plus" [size]="16" /> Nouvelle facture
+          </app-button>
+        </app-empty-state>
+      </div>
+    } @else {
+      @if (vue() === 'liste') {
+        <div class="hidden overflow-x-auto md:block">
+          <table class="w-full min-w-[680px] text-left text-sm">
+            <thead class="border-y border-border text-xs uppercase tracking-wide text-fg-subtle">
+              <tr>
+                <th class="px-5 py-3 font-semibold">Référence</th>
+                <th class="px-5 py-3 font-semibold">Client</th>
+                <th class="px-5 py-3 font-semibold">Projet</th>
+                <th class="px-5 py-3 font-semibold">Échéance</th>
+                <th class="px-5 py-3 text-right font-semibold">Montant</th>
+                <th class="px-5 py-3 font-semibold">Statut</th>
+                <th class="px-5 py-3"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (f of facturesPage(); track f.id) {
+                <tr [routerLink]="['/factures', f.id]" class="cursor-pointer hover:bg-surface-2">
+                  <td class="px-5 py-3 font-semibold text-primary">{{ f.numero }}</td>
+                  <td class="px-5 py-3">
+                    <div class="flex items-center gap-2.5">
+                      <app-avatar size="sm" [initials]="f.initiales" />
+                      <span class="font-medium text-fg">{{ f.clientNom }}</span>
+                    </div>
+                  </td>
+                  <td class="px-5 py-3 text-fg-muted">{{ f.projet }}</td>
+                  <td class="px-5 py-3 text-fg-muted">{{ f.echeance | date: 'dd/MM/yyyy' }}</td>
+                  <td class="px-5 py-3 text-right font-semibold text-fg">
+                    {{ total(f) | currency: 'EUR' : 'symbol' : '1.0-0' : 'fr' }}
+                  </td>
+                  <td class="px-5 py-3">
+                    <span
+                      class="rounded-full px-2.5 py-0.5 text-xs font-medium {{
+                        statutClass(f.statut)
+                      }}"
+                      >{{ f.statut }}</span
+                    >
+                  </td>
+                  <td class="px-5 py-3 text-right" (click)="$event.stopPropagation()">
+                    <div class="flex items-center justify-end gap-1">
+                      <button
+                        type="button"
+                        (click)="$event.stopPropagation(); ouvrirEdition(f.id)"
+                        aria-label="Modifier"
+                        title="Modifier"
+                        class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-surface-2 hover:text-fg"
+                      >
+                        <app-icon name="edit" [size]="15" />
+                      </button>
+                      <button
+                        type="button"
+                        (click)="$event.stopPropagation(); demanderSuppression(f.id)"
+                        aria-label="Supprimer"
+                        title="Supprimer"
+                        class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-danger-soft hover:text-danger"
+                      >
+                        <app-icon name="trash" [size]="15" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+      <div
+        class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3"
+        [class.md:hidden]="vue() === 'liste'"
+      >
+        @for (f of facturesPage(); track f.id) {
+          <div
+            class="group relative rounded-xl border border-border bg-surface shadow-sm transition duration-200 hover:-translate-y-1 hover:border-border-strong hover:shadow-xl"
+          >
+            <a [routerLink]="['/factures', f.id]" class="block p-4">
+              <div class="flex items-center justify-between pr-8">
+                <span class="font-semibold text-primary">{{ f.numero }}</span>
+                <span
+                  class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ statutClass(f.statut) }}"
+                  >{{ f.statut }}</span
+                >
+              </div>
+              <p class="mt-2 truncate text-sm font-medium text-fg">{{ f.projet }}</p>
+              <div class="mt-3 flex items-center gap-2.5 border-t border-border pt-3">
+                <app-avatar size="sm" [initials]="f.initiales" />
+                <span class="flex-1 truncate text-sm text-fg-muted">{{ f.clientNom }}</span>
+              </div>
+              <div class="mt-3 flex items-center justify-between text-sm">
+                <span class="text-fg-muted">Éch. {{ f.echeance | date: 'dd/MM/yyyy' }}</span>
+                <span class="font-bold text-fg">{{
+                  total(f) | currency: 'EUR' : 'symbol' : '1.0-0' : 'fr'
+                }}</span>
+              </div>
+            </a>
+            <button
+              (click)="demanderSuppression(f.id); $event.stopPropagation()"
+              title="Supprimer"
+              aria-label="Supprimer"
+              class="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-lg border border-border bg-surface/95 text-fg-muted opacity-0 shadow-sm transition hover:text-danger focus:opacity-100 group-hover:opacity-100"
+            >
+              <app-icon name="trash" [size]="15" />
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (facturesPage().length > 0) {
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [indexDebut]="indexDebut()"
+        [indexFin]="indexFin()"
+        [total]="facturesTriees().length"
+        (pageChange)="page.set($event)"
+      />
+    }
+  </section>
+</div>
+
+@if (aSupprimer(); as facture) {
+  <div class="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+    <button
+      type="button"
+      aria-label="Fermer"
+      class="absolute inset-0 h-full w-full cursor-default"
+      (click)="annulerSuppression()"
+    ></button>
+    <div
+      class="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fac-del-title"
+    >
+      <div class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger-soft text-danger">
+        <app-icon name="trash" [size]="22" />
+      </div>
+      <h3 id="fac-del-title" class="mt-4 text-center text-lg font-bold text-fg">
+        Supprimer la facture {{ facture.numero }} ?
+      </h3>
+      <p class="mt-2 text-center text-sm text-fg-muted">
+        Cette action est irréversible. La facture sera définitivement retirée.
+      </p>
+      <div class="mt-6 grid grid-cols-2 gap-3">
+        <app-button variant="secondary" (click)="annulerSuppression()">Annuler</app-button>
+        <app-button variant="danger" (click)="confirmerSuppression()">Supprimer</app-button>
+      </div>
+    </div>
+  </div>
+}

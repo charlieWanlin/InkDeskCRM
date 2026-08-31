@@ -1,0 +1,454 @@
+<div class="p-6">
+  <a
+    routerLink="/factures"
+    class="no-print mb-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+  >
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+    Retour aux factures
+  </a>
+
+  @if (document(); as f) {
+
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <h1 class="text-2xl font-bold text-fg">{{ f.numero }}</h1>
+
+          <div class="relative">
+            <button
+              (click)="statutMenu.set(!statutMenu())"
+              class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium {{
+                statutClass(f.statut)
+              }}"
+            >
+              {{ f.statut }}
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            @if (statutMenu()) {
+              <button
+                type="button"
+                aria-label="Fermer le menu"
+                class="fixed inset-0 z-10 cursor-default"
+                (click)="statutMenu.set(false)"
+              ></button>
+              <div
+                class="absolute left-0 top-8 z-20 w-40 rounded-xl border border-border bg-surface p-1 shadow-lg"
+              >
+                @for (s of statutsDispo; track s) {
+                  <button
+                    (click)="changerStatut(s); statutMenu.set(false)"
+                    class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition hover:bg-surface-2"
+                    [class.font-semibold]="s === f.statut"
+                    [class.text-primary]="s === f.statut"
+                    [class.text-fg]="s !== f.statut"
+                  >
+                    {{ s }}
+                    @if (s === f.statut) {
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                    }
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        <p class="mt-1 text-sm text-fg-muted">{{ f.clientNom }} · {{ f.projet }}</p>
+      </div>
+      <div class="no-print flex items-center gap-2">
+        <button
+          (click)="enregistrer()"
+          class="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <path d="M17 21v-8H7v8M7 3v5h8" />
+          </svg>
+          Enregistrer
+        </button>
+
+        <div class="relative">
+          <button
+            (click)="menuOuvert.set(!menuOuvert())"
+            class="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface text-fg-muted transition hover:bg-surface-2 hover:text-fg"
+            aria-label="Actions"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="1.6" />
+              <circle cx="12" cy="12" r="1.6" />
+              <circle cx="12" cy="19" r="1.6" />
+            </svg>
+          </button>
+          @if (menuOuvert()) {
+            <button
+              type="button"
+              aria-label="Fermer le menu"
+              class="fixed inset-0 z-10 cursor-default"
+              (click)="menuOuvert.set(false)"
+            ></button>
+            <div
+              class="absolute right-0 top-11 z-20 w-48 rounded-xl border border-border bg-surface p-1 shadow-lg"
+            >
+              <button
+                (click)="menuOuvert.set(false); confirmationOuverte.set(true)"
+                class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-danger hover:bg-danger-soft"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                  />
+                </svg>
+                Supprimer la facture
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+
+      <section class="rounded-2xl border border-border bg-surface p-6 lg:col-span-2">
+        <div class="flex items-start justify-between border-b border-border pb-5">
+          <div>
+            <p class="text-lg font-bold text-fg">Facture</p>
+            <p class="mt-1 text-sm text-fg-muted">N° {{ f.numero }}</p>
+            <p class="text-sm text-fg-muted">Émise le {{ f.date }}</p>
+            <p class="text-sm text-fg-muted">Échéance : {{ f.echeance }}</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="text-right">
+              <app-studio-letterhead />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-start justify-between gap-4 border-b border-border py-4">
+          <div class="min-w-0">
+            <p class="text-xs uppercase tracking-wide text-fg-subtle">Client</p>
+            <select
+              (change)="changerClient($any($event.target).value)"
+              class="mt-1 h-9 rounded-lg border border-transparent bg-transparent px-2 text-sm font-semibold text-primary outline-none transition hover:border-border focus:border-primary focus:bg-surface"
+            >
+              @for (c of clients(); track c.id) {
+                <option [value]="c.id" [selected]="c.id === f.clientId">
+                  {{ c.firstName }} {{ c.lastName }}
+                </option>
+              }
+            </select>
+            @if (contact(); as c) {
+              <p class="px-2 text-sm text-fg-muted">{{ c.email }} · {{ c.telephone }}</p>
+            }
+          </div>
+          <div class="text-right">
+            <p class="text-xs uppercase tracking-wide text-fg-subtle">Projet</p>
+            <select
+              (change)="changerProjet($any($event.target).value)"
+              class="mt-1 h-9 w-full rounded-lg border border-transparent bg-transparent px-2 text-right text-sm font-semibold text-fg outline-none transition hover:border-border focus:border-primary focus:bg-surface"
+            >
+              <option value="" [selected]="!f.projetId">— Aucun projet —</option>
+              @for (p of projets(); track p.id) {
+                <option [value]="p.id" [selected]="p.id === f.projetId">{{ p.titre }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-2">
+
+          <div
+            class="mb-1 hidden grid-cols-[1fr_3.5rem_6rem_5rem_2.5rem] gap-2 border-b border-border pb-2 text-xs font-semibold uppercase tracking-wide text-fg-subtle sm:grid"
+          >
+            <span>Désignation</span>
+            <span class="text-center">Qté</span>
+            <span class="text-right">P.U.</span>
+            <span class="text-right">Total</span>
+            <span></span>
+          </div>
+          @for (l of f.lignes; track l.id) {
+            <div
+              class="grid items-center gap-2 border-b border-border py-3 [grid-template-areas:'desig_desig_del'_'qte_pu_total'] [grid-template-columns:1fr_1fr_auto] sm:grid-cols-[1fr_3.5rem_6rem_5rem_2.5rem] sm:border-0 sm:py-2 sm:[grid-template-areas:'desig_qte_pu_total_del']"
+            >
+              <input
+                [value]="l.designation"
+                (input)="majLigne(l, 'designation', $any($event.target).value)"
+                placeholder="Désignation…"
+                aria-label="Désignation de la ligne"
+                class="h-9 w-full rounded-lg border border-transparent bg-transparent px-2 text-sm text-fg outline-none transition [grid-area:desig] hover:border-border focus:border-primary focus:bg-surface"
+              />
+              <label class="flex flex-col gap-0.5 [grid-area:qte]">
+                <span class="text-[11px] uppercase tracking-wide text-fg-subtle sm:hidden"
+                  >Qté</span
+                >
+                <input
+                  type="number"
+                  min="1"
+                  [value]="l.quantite"
+                  (input)="majLigne(l, 'quantite', $any($event.target).value)"
+                  aria-label="Quantité"
+                  class="h-9 w-full rounded-lg border border-transparent bg-transparent px-2 text-center text-sm text-fg outline-none transition hover:border-border focus:border-primary focus:bg-surface"
+                />
+              </label>
+              <label class="flex flex-col gap-0.5 [grid-area:pu]">
+                <span class="text-[11px] uppercase tracking-wide text-fg-subtle sm:hidden"
+                  >P.U.</span
+                >
+                <input
+                  type="number"
+                  min="0"
+                  [value]="l.prixUnitaire"
+                  (input)="majLigne(l, 'prixUnitaire', $any($event.target).value)"
+                  aria-label="Prix unitaire"
+                  class="h-9 w-full rounded-lg border border-transparent bg-transparent px-2 text-right text-sm text-fg outline-none transition hover:border-border focus:border-primary focus:bg-surface"
+                />
+              </label>
+              <div class="flex flex-col gap-0.5 text-right [grid-area:total]">
+                <span class="text-[11px] uppercase tracking-wide text-fg-subtle sm:hidden"
+                  >Total</span
+                >
+                <span class="text-sm font-semibold text-fg">{{ totalLigne(l) }} €</span>
+              </div>
+              <button
+                (click)="supprimerLigne(l)"
+                title="Supprimer la ligne"
+                aria-label="Supprimer la ligne"
+                class="grid h-8 w-8 place-items-center justify-self-end rounded-lg text-fg-subtle transition [grid-area:del] hover:bg-danger-soft hover:text-danger"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                  />
+                </svg>
+              </button>
+            </div>
+          } @empty {
+            <p class="py-6 text-center text-sm text-fg-subtle">
+              Aucune prestation. Ajoutez une ligne ci-dessous.
+            </p>
+          }
+        </div>
+
+        <button
+          (click)="ajouterLigne()"
+          class="mt-3 inline-flex items-center gap-2 rounded-lg border border-dashed border-border-strong px-3 py-2 text-sm font-medium text-fg-muted transition hover:border-primary hover:text-primary"
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Ajouter une ligne
+        </button>
+
+        <div class="mt-5 flex flex-col items-end gap-1 border-t border-border pt-4 text-sm">
+          <div class="flex w-56 justify-between">
+            <span class="text-fg-muted">Total HT</span
+            ><span class="font-semibold text-fg">{{ total() }} €</span>
+          </div>
+          <div class="flex w-56 justify-between">
+            <span class="text-fg-muted">TVA (0 %)</span><span class="text-fg-muted">0 €</span>
+          </div>
+          <div class="mt-1 flex w-56 justify-between border-t border-border pt-2">
+            <span class="font-bold text-fg">Total TTC</span
+            ><span class="text-lg font-bold text-fg">{{ total() }} €</span>
+          </div>
+        </div>
+
+        <p class="mt-4 text-xs text-fg-subtle">
+          TVA non applicable, art. 293 B du CGI. Paiement à réception. Pénalités de retard : 3× le
+          taux d'intérêt légal.
+        </p>
+      </section>
+
+      <div class="no-print flex flex-col gap-4">
+        <section class="rounded-2xl border border-border bg-surface p-5">
+          <h2 class="mb-3 font-semibold text-fg">Récapitulatif</h2>
+          <dl class="flex flex-col divide-y divide-border text-sm">
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Client</dt>
+              <dd>
+                <a
+                  [routerLink]="['/clients', f.clientId]"
+                  class="font-semibold text-primary hover:underline"
+                  >{{ f.clientNom }}</a
+                >
+              </dd>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">État</dt>
+              <dd>
+                <span
+                  class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ statutClass(f.statut) }}"
+                  >{{ f.statut }}</span
+                >
+              </dd>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Échéance</dt>
+              <dd class="font-semibold text-fg">{{ f.echeance }}</dd>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Montant</dt>
+              <dd class="font-semibold text-fg">{{ total() }} €</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="rounded-2xl border border-border bg-surface p-4">
+          <button
+            (click)="imprimer()"
+            class="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-fg transition hover:bg-surface-2"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+            </svg>
+            Télécharger le PDF
+          </button>
+        </section>
+      </div>
+    </div>
+  } @else {
+    <div
+      class="grid place-items-center rounded-2xl border border-dashed border-border-strong bg-surface p-12 text-center"
+    >
+      <p class="font-semibold text-fg">Facture introuvable</p>
+      <p class="mt-1 text-sm text-fg-muted">Cette facture n'existe pas ou a été supprimée.</p>
+      <a
+        routerLink="/factures"
+        class="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
+        >Retour aux factures</a
+      >
+    </div>
+  }
+</div>
+
+@if (confirmationOuverte()) {
+  <div class="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+    <button
+      type="button"
+      aria-label="Fermer"
+      class="absolute inset-0 h-full w-full cursor-default"
+      (click)="confirmationOuverte.set(false)"
+    ></button>
+    <div
+      class="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="facd-del-title"
+    >
+      <div
+        class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger-soft text-danger"
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+          />
+        </svg>
+      </div>
+      <h3 id="facd-del-title" class="mt-4 text-center text-lg font-bold text-fg">
+        Supprimer cette facture ?
+      </h3>
+      <p class="mt-2 text-center text-sm text-fg-muted">
+        Cette action est irréversible. La facture sera définitivement retirée.
+      </p>
+      <div class="mt-6 grid grid-cols-2 gap-3">
+        <button
+          (click)="confirmationOuverte.set(false)"
+          class="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+        >
+          Annuler
+        </button>
+        <button
+          (click)="supprimer()"
+          class="rounded-lg bg-danger px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+}
