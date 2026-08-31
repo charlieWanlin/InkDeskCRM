@@ -1,0 +1,31 @@
+<div class="flex items-center justify-between px-5 py-4 text-sm text-fg-muted">
+  <span>{{ indexDebut() }}–{{ indexFin() }} sur {{ total() }}</span>
+  <div class="flex gap-1">
+    <button
+      (click)="precedent()"
+      [disabled]="page() === 1"
+      class="grid h-8 w-8 place-items-center rounded-lg border border-border hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      ‹
+    </button>
+    @for (p of pages(); track p) {
+      <button
+        (click)="aller(p)"
+        [class]="
+          p === page()
+            ? 'grid h-8 w-8 place-items-center rounded-lg bg-primary font-semibold text-white'
+            : 'grid h-8 w-8 place-items-center rounded-lg border border-border text-fg-muted hover:bg-surface-2'
+        "
+      >
+        {{ p }}
+      </button>
+    }
+    <button
+      (click)="suivant()"
+      [disabled]="page() === totalPages()"
+      class="grid h-8 w-8 place-items-center rounded-lg border border-border hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      ›
+    </button>
+  </div>
+</div>

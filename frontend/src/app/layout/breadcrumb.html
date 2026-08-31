@@ -1,0 +1,15 @@
+@if (crumbs().length > 1) {
+  <nav
+    aria-label="Fil d'Ariane"
+    class="flex flex-shrink-0 items-center gap-1 border-b border-border bg-surface px-6 py-3 text-xs text-fg-muted"
+  >
+    @for (c of crumbs(); track c.link) {
+      @if (c.last) {
+        <span class="font-medium text-fg">{{ c.label }}</span>
+      } @else {
+        <a [routerLink]="c.link" class="transition hover:text-fg hover:underline">{{ c.label }}</a>
+        <app-icon name="chevron-right" [size]="13" class="text-fg-subtle" />
+      }
+    }
+  </nav>
+}

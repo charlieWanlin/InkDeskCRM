@@ -1,0 +1,266 @@
+<aside
+  class="fixed inset-y-0 left-0 z-50 flex w-64 flex-shrink-0 flex-col bg-sidebar px-3 py-4 text-sidebar-fg shadow-xl transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0 lg:shadow-none"
+  [class.-translate-x-full]="!mobileOpen()"
+  [class.translate-x-0]="mobileOpen()"
+  [class.lg:w-64]="!narrow()"
+  [class.lg:w-20]="narrow()"
+>
+  <a
+    routerLink="/dashboard"
+    [attr.title]="narrow() ? shopName : null"
+    class="mb-2 flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-white/5"
+    [class.justify-center]="narrow()"
+  >
+    <img src="assets/img/moon.png" alt="" class="h-11 w-11 flex-shrink-0 select-none" />
+    @if (!narrow()) {
+      <span class="leading-tight">
+        <span class="block text-[15px] font-bold text-white">{{ studio()?.name ?? shopName }}</span>
+        <span class="block text-[11px] text-sidebar-muted">{{ softwareName }}</span>
+      </span>
+    }
+  </a>
+
+  <nav
+    id="navigation-principale"
+    aria-label="Navigation principale"
+    class="flex flex-1 flex-col gap-0.5 overflow-y-auto"
+  >
+    @if (!narrow()) {
+      <p class="px-3 pb-1.5 pt-3 text-[10.5px] font-semibold uppercase tracking-wider text-sidebar-muted">
+        Principal
+      </p>
+    } @else {
+      <div class="mx-2 my-2 border-t border-white/10"></div>
+    }
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="!bg-primary !text-white"
+      ariaCurrentWhenActive="page"
+      [attr.title]="narrow() ? 'Tableau de bord' : null"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-white/5 hover:text-white"
+      [class.justify-center]="narrow()"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      @if (!narrow()) {
+        Tableau de bord
+      }
+    </a>
+    <a
+      routerLink="/rendez-vous"
+      routerLinkActive="!bg-primary !text-white"
+      ariaCurrentWhenActive="page"
+      [attr.title]="narrow() ? 'Rendez-vous' : null"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-white/5 hover:text-white"
+      [class.justify-center]="narrow()"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <path d="M16 2v4M8 2v4M3 10h18" />
+      </svg>
+      @if (!narrow()) {
+        Rendez-vous
+      }
+    </a>
+
+    @if (!narrow()) {
+      <p class="px-3 pb-1.5 pt-5 text-[10.5px] font-semibold uppercase tracking-wider text-sidebar-muted">
+        Gestion
+      </p>
+    } @else {
+      <div class="mx-2 my-2 border-t border-white/10"></div>
+    }
+    <a
+      routerLink="/clients"
+      routerLinkActive="!bg-primary !text-white"
+      ariaCurrentWhenActive="page"
+      [attr.title]="narrow() ? 'Clients' : null"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-white/5 hover:text-white"
+      [class.justify-center]="narrow()"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+      @if (!narrow()) {
+        Clients
+      }
+    </a>
+    <a
+      routerLink="/devis"
+      routerLinkActive="!bg-primary !text-white"
+      ariaCurrentWhenActive="page"
+      [attr.title]="narrow() ? 'Devis' : null"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-white/5 hover:text-white"
+      [class.justify-center]="narrow()"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6M9 13h6M9 17h4" />
+      </svg>
+      @if (!narrow()) {
+        Devis
+      }
+    </a>
+    <a
+      routerLink="/factures"
+      routerLinkActive="!bg-primary !text-white"
+      ariaCurrentWhenActive="page"
+      [attr.title]="narrow() ? 'Factures' : null"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-white/5 hover:text-white"
+      [class.justify-center]="narrow()"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z" />
+        <path d="M8 7h8M8 11h8M8 15h5" />
+      </svg>
+      @if (!narrow()) {
+        Factures
+      }
+    </a>
+    <a
+      routerLink="/projets"
+      routerLinkActive="!bg-primary !text-white"
+      ariaCurrentWhenActive="page"
+      [attr.title]="narrow() ? 'Projets' : null"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-white/5 hover:text-white"
+      [class.justify-center]="narrow()"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 2 2 7l10 5 10-5-10-5z" />
+        <path d="m2 17 10 5 10-5M2 12l10 5 10-5" />
+      </svg>
+      @if (!narrow()) {
+        Projets
+      }
+    </a>
+
+    @if (!narrow()) {
+      <p class="px-3 pb-1.5 pt-5 text-[10.5px] font-semibold uppercase tracking-wider text-sidebar-muted">
+        Catalogue
+      </p>
+    } @else {
+      <div class="mx-2 my-2 border-t border-white/10"></div>
+    }
+    <a
+      routerLink="/flash"
+      routerLinkActive="!bg-primary !text-white"
+      ariaCurrentWhenActive="page"
+      [attr.title]="narrow() ? 'Flash' : null"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-white/5 hover:text-white"
+      [class.justify-center]="narrow()"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      @if (!narrow()) {
+        Flash
+      }
+    </a>
+  </nav>
+
+  <div class="flex flex-shrink-0 flex-col gap-0.5 border-t border-white/10 pt-3">
+    @if (!narrow()) {
+      <p class="px-3 pb-1 text-[10.5px] font-semibold uppercase tracking-wider text-sidebar-muted">
+        Administration
+      </p>
+    }
+    <a
+      routerLink="/utilisateurs"
+      routerLinkActive="!bg-primary !text-white"
+      ariaCurrentWhenActive="page"
+      [attr.title]="narrow() ? 'Utilisateurs' : null"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition hover:bg-white/5 hover:text-white"
+      [class.justify-center]="narrow()"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+      @if (!narrow()) {
+        Utilisateurs
+      }
+    </a>
+  </div>
+</aside>
