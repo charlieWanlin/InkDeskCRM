@@ -1,0 +1,226 @@
+<div class="p-4 sm:p-6">
+  <app-page-header title="Utilisateurs" subtitle="Gérez les membres de votre studio">
+    @if (estAdmin()) {
+      <app-button variant="primary" (click)="ouvrirModal()">
+        <app-icon name="plus" [size]="16" /> Inviter un membre
+      </app-button>
+    }
+  </app-page-header>
+
+  <section class="overflow-hidden rounded-2xl border border-border bg-surface">
+
+    <div class="hidden overflow-x-auto md:block">
+      <table class="w-full min-w-[560px] text-left text-sm">
+        <thead class="border-b border-border text-xs uppercase tracking-wide text-fg-subtle">
+          <tr>
+            <th class="px-5 py-3 font-semibold">Membre</th>
+            <th class="px-5 py-3 font-semibold">Rôle</th>
+            <th class="px-5 py-3 font-semibold">Statut</th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          @for (m of membres(); track m.id) {
+            <tr class="hover:bg-surface-2">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <app-avatar [initials]="m.initiales" />
+                  <div>
+                    <p class="font-semibold text-fg">{{ m.nom }}</p>
+                    <p class="text-xs text-fg-muted">{{ m.email }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-3">
+                <span
+                  class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ roleClass(m.role) }}"
+                  >{{ m.role }}</span
+                >
+              </td>
+              <td class="px-5 py-3">
+                <span class="inline-flex items-center gap-1.5 text-sm text-success">
+                  <span class="h-1.5 w-1.5 rounded-full bg-success"></span> Actif
+                </span>
+              </td>
+              <td class="px-5 py-3 text-right">
+                @if (m.id === monId()) {
+                  <span class="text-xs text-fg-subtle">Vous</span>
+                } @else if (estAdmin() && m.role !== 'Propriétaire') {
+                  <button
+                    (click)="demanderSuppression(m)"
+                    aria-label="Supprimer le membre"
+                    title="Supprimer"
+                    class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-danger-soft hover:text-danger"
+                  >
+                    <app-icon name="trash" [size]="16" />
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="px-5 py-10 text-center text-sm text-fg-subtle">
+                Aucun membre pour l'instant.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <ul class="divide-y divide-border md:hidden">
+      @for (m of membres(); track m.id) {
+        <li class="flex items-center gap-3 p-4">
+          <app-avatar [initials]="m.initiales" />
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-semibold text-fg">{{ m.nom }}</p>
+            <p class="truncate text-xs text-fg-muted">{{ m.email }}</p>
+            <div class="mt-1.5 flex flex-wrap items-center gap-2">
+              <span
+                class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ roleClass(m.role) }}"
+                >{{ m.role }}</span
+              >
+              <span class="inline-flex items-center gap-1.5 text-xs text-success">
+                <span class="h-1.5 w-1.5 rounded-full bg-success"></span> Actif
+              </span>
+            </div>
+          </div>
+          @if (m.id === monId()) {
+            <span class="shrink-0 text-xs text-fg-subtle">Vous</span>
+          } @else if (estAdmin() && m.role !== 'Propriétaire') {
+            <button
+              (click)="demanderSuppression(m)"
+              aria-label="Supprimer le membre"
+              title="Supprimer"
+              class="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-fg-subtle transition hover:bg-danger-soft hover:text-danger"
+            >
+              <app-icon name="trash" [size]="16" />
+            </button>
+          }
+        </li>
+      } @empty {
+        <li class="px-5 py-10 text-center text-sm text-fg-subtle">Aucun membre pour l'instant.</li>
+      }
+    </ul>
+  </section>
+</div>
+
+@if (modalOuverte()) {
+  <div class="fixed inset-0 z-50 grid place-items-center p-4">
+    <button
+      type="button"
+      aria-label="Fermer"
+      class="absolute inset-0 h-full w-full cursor-default bg-black/40"
+      (click)="fermerModal()"
+    ></button>
+    <div
+      class="relative w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="invite-title"
+    >
+      <h2 id="invite-title" class="text-lg font-bold text-fg">Inviter un membre</h2>
+      <p class="mt-1 text-sm text-fg-muted">Créez un accès pour un membre de votre studio.</p>
+
+      <form [formGroup]="form" (ngSubmit)="inviter()" class="mt-5 flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label for="u-name" class="text-sm font-semibold text-fg">Nom complet</label>
+          <input
+            id="u-name"
+            formControlName="name"
+            placeholder="Ex : Léa Martin"
+            class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+          @if (error('name'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="u-email" class="text-sm font-semibold text-fg">E-mail</label>
+          <input
+            id="u-email"
+            type="email"
+            formControlName="email"
+            placeholder="lea@studio.fr"
+            class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+          @if (error('email'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label for="u-password" class="text-sm font-semibold text-fg">Mot de passe</label>
+            <input
+              id="u-password"
+              type="password"
+              formControlName="password"
+              placeholder="••••••"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+            @if (error('password'); as m) {
+              <span class="text-xs text-danger">{{ m }}</span>
+            }
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="u-role" class="text-sm font-semibold text-fg">Rôle</label>
+            <select
+              id="u-role"
+              formControlName="role"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            >
+              <option value="artiste">Tatoueur</option>
+              <option value="admin">Propriétaire</option>
+            </select>
+          </div>
+        </div>
+
+        @if (serverError()) {
+          <p class="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">{{ serverError() }}</p>
+        }
+
+        <div class="mt-1 flex justify-end gap-2">
+          <app-button variant="secondary" type="button" (click)="fermerModal()">Annuler</app-button>
+          <app-button variant="primary" type="submit">
+            <app-icon name="check" [size]="16" /> Inviter
+          </app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (aSupprimer(); as membre) {
+  <div class="fixed inset-0 z-50 grid place-items-center p-4">
+    <button
+      type="button"
+      aria-label="Fermer"
+      class="absolute inset-0 h-full w-full cursor-default bg-black/40"
+      (click)="aSupprimer.set(null)"
+    ></button>
+    <div
+      class="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="user-del-title"
+    >
+      <div
+        class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger-soft text-danger"
+      >
+        <app-icon name="trash" [size]="22" />
+      </div>
+      <h2 id="user-del-title" class="mt-4 text-center text-lg font-bold text-fg">
+        Supprimer ce membre ?
+      </h2>
+      <p class="mt-1 text-center text-sm text-fg-muted">
+        {{ membre.nom }} perdra l'accès au studio. Cette action est définitive.
+      </p>
+      <div class="mt-5 flex justify-center gap-2">
+        <app-button variant="secondary" (click)="aSupprimer.set(null)">Annuler</app-button>
+        <app-button variant="danger" (click)="confirmerSuppression()">Supprimer</app-button>
+      </div>
+    </div>
+  </div>
+}

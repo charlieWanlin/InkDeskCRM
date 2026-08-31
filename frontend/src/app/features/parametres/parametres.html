@@ -1,0 +1,250 @@
+<div class="min-h-full bg-canvas p-6">
+  <app-page-header title="Paramètres" subtitle="Configurez votre studio">
+    @if (estAdmin()) {
+      <app-button variant="primary" (click)="enregistrer()">
+        <app-icon name="check" [size]="16" /> Enregistrer
+      </app-button>
+    }
+  </app-page-header>
+
+  @if (!estAdmin()) {
+    <div class="mb-4 flex items-center gap-2 rounded-xl border border-border bg-surface-2/50 px-4 py-3 text-sm text-fg-muted">
+      <app-icon name="info" [size]="16" />
+      Les paramètres du studio sont en lecture seule. Seul un administrateur peut les modifier.
+    </div>
+  }
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="enregistrer()"
+    class="grid grid-cols-1 gap-4 xl:grid-cols-[1.35fr_1fr]"
+  >
+    <div class="space-y-4">
+      <section class="rounded-2xl border border-border bg-surface p-5">
+        <div class="mb-5 flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+
+            <span
+              class="grid h-12 w-12 flex-shrink-0 place-items-center rounded-xl bg-primary text-base font-bold text-white"
+              >{{ initiales() }}</span
+            >
+            <div>
+              <h2 class="text-lg font-semibold text-fg">Studio</h2>
+              <p class="mt-1 text-sm text-fg-muted">Identité utilisée sur les devis et factures.</p>
+            </div>
+          </div>
+          <span class="rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-medium text-primary">
+            {{ nomAffiche() }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="flex flex-col gap-1.5">
+            <label for="studio-nom" class="text-sm font-semibold text-fg">Nom du studio</label>
+            <input
+              id="studio-nom"
+              formControlName="name"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="studio-sous-titre" class="text-sm font-semibold text-fg">Sous-titre</label>
+            <input
+              id="studio-sous-titre"
+              formControlName="subtitle"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="studio-email" class="text-sm font-semibold text-fg">E-mail</label>
+            <input
+              id="studio-email"
+              type="email"
+              formControlName="email"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="studio-telephone" class="text-sm font-semibold text-fg">Téléphone</label>
+            <input
+              id="studio-telephone"
+              type="tel"
+              formControlName="phone"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5 md:col-span-2">
+            <label for="studio-adresse" class="text-sm font-semibold text-fg">Adresse</label>
+            <input
+              id="studio-adresse"
+              formControlName="address"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="studio-siret" class="text-sm font-semibold text-fg">SIRET</label>
+            <input
+              id="studio-siret"
+              formControlName="siret"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="studio-tva" class="text-sm font-semibold text-fg">Mention TVA</label>
+            <input
+              id="studio-tva"
+              formControlName="tvaMention"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-2xl border border-border bg-surface p-5">
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-fg">Facturation</h2>
+          <p class="mt-1 text-sm text-fg-muted">
+            Numérotation et conditions visibles sur les documents.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="flex flex-col gap-1.5">
+            <label for="prefixe-devis" class="text-sm font-semibold text-fg">Préfixe devis</label>
+            <input
+              id="prefixe-devis"
+              formControlName="quotePrefix"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="prefixe-factures" class="text-sm font-semibold text-fg"
+              >Préfixe factures</label
+            >
+            <input
+              id="prefixe-factures"
+              formControlName="invoicePrefix"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="paiement" class="text-sm font-semibold text-fg"
+              >Conditions de paiement</label
+            >
+            <input
+              id="paiement"
+              formControlName="paymentTerms"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="acompte" class="text-sm font-semibold text-fg">Acompte</label>
+            <input
+              id="acompte"
+              formControlName="depositTerms"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
+
+        <div class="mt-4 rounded-xl border border-border bg-surface-2 p-4">
+          <p class="text-sm font-semibold text-fg">Micro-entreprise</p>
+          <p class="mt-1 text-sm text-fg-muted">{{ mentionTva() }} · montants affichés hors TVA.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="space-y-4">
+      <section class="rounded-2xl border border-border bg-surface p-5">
+        <div class="mb-4 flex items-center gap-3">
+          <div class="grid h-10 w-10 place-items-center rounded-full bg-info-soft text-info">
+            <app-icon name="info" [size]="18" />
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-fg">Apparence</h2>
+            <p class="text-sm text-fg-muted">Le thème se change depuis la barre du haut.</p>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div
+            class="flex items-center justify-between rounded-xl border border-border bg-surface-2 p-3"
+          >
+            <div>
+              <p class="text-sm font-semibold text-fg">Mode clair / sombre</p>
+              <p class="text-xs text-fg-muted">Les tokens s’adaptent automatiquement.</p>
+            </div>
+            <span
+              class="rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-medium text-primary"
+            >
+              Barre du haut
+            </span>
+          </div>
+          <div
+            class="flex items-center justify-between rounded-xl border border-border bg-surface-2 p-3"
+          >
+            <div>
+              <p class="text-sm font-semibold text-fg">Densité</p>
+              <p class="text-xs text-fg-muted">Cartes confortables et champs compacts.</p>
+            </div>
+            <span class="rounded-full bg-gold-soft px-2.5 py-0.5 text-xs font-medium text-gold">
+              Confort
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-2xl border border-border bg-surface p-5">
+        <div class="mb-4">
+          <h2 class="text-lg font-semibold text-fg">Notifications</h2>
+          <p class="mt-1 text-sm text-fg-muted">Rappels simples pour garder le studio fluide.</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <p class="text-sm font-semibold text-fg">Rappel de rendez-vous</p>
+              <p class="text-xs text-fg-muted">La veille de chaque séance.</p>
+            </div>
+            <button
+              type="button"
+              (click)="toggleRappelsRdv()"
+              class="relative h-6 w-11 rounded-full p-0.5 transition {{
+                toggleFondClass(rappelsRdv())
+              }}"
+              aria-label="Activer les rappels de rendez-vous"
+            >
+              <span
+                class="block h-5 w-5 rounded-full bg-surface shadow-sm transition-transform {{
+                  togglePastilleClass(rappelsRdv())
+                }}"
+              ></span>
+            </button>
+          </div>
+          <div class="border-t border-border pt-4">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-sm font-semibold text-fg">Facture réglée</p>
+                <p class="text-xs text-fg-muted">Notification quand un paiement est reçu.</p>
+              </div>
+              <button
+                type="button"
+                (click)="toggleNotificationsFactures()"
+                class="relative h-6 w-11 rounded-full p-0.5 transition {{
+                  toggleFondClass(notificationsFactures())
+                }}"
+                aria-label="Activer les notifications de factures"
+              >
+                <span
+                  class="block h-5 w-5 rounded-full bg-surface shadow-sm transition-transform {{
+                    togglePastilleClass(notificationsFactures())
+                  }}"
+                ></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </form>
+</div>
