@@ -1,0 +1,85 @@
+<div class="p-6">
+  <app-page-header
+    title="Clients"
+    [subtitle]="clients().length + ' clients · ' + newThisMonth() + ' nouveaux ce mois'"
+  >
+    <app-button variant="primary" (click)="openCreate()">
+      <app-icon name="plus" [size]="16" /> Nouveau client
+    </app-button>
+  </app-page-header>
+
+  <app-list-toolbar [(search)]="search" placeholder="Rechercher un client…">
+    <app-view-toggle [(vue)]="view" />
+  </app-list-toolbar>
+
+  <section class="overflow-hidden rounded-2xl border border-border bg-surface">
+
+    <app-filter-bar>
+      <app-select [(value)]="statusFilter">
+        <option value="">Tous les statuts</option>
+        <option value="actif">Actifs</option>
+        <option value="prospect">Prospects</option>
+        <option value="inactif">Inactifs</option>
+      </app-select>
+      <app-select [(value)]="styleFilter">
+        <option value="">Tous les styles</option>
+        @for (s of styles; track s) {
+          <option [value]="s">{{ s }}</option>
+        }
+      </app-select>
+      <app-select [(value)]="sort">
+        <option value="recent">Plus récents</option>
+        <option value="ancien">Plus anciens</option>
+        <option value="nom_asc">Nom (A→Z)</option>
+        <option value="nom_desc">Nom (Z→A)</option>
+      </app-select>
+    </app-filter-bar>
+
+    @if (isLoading()) {
+      <div class="grid place-items-center p-12 text-sm text-fg-muted">Chargement des clients…</div>
+    } @else if (isError()) {
+      <div class="p-6">
+        <app-empty-state
+          icon="x-circle"
+          title="Impossible de charger les clients"
+          subtitle="Vérifiez que le serveur (MAMP) est démarré, puis réessayez."
+        >
+          <app-button variant="secondary" (click)="reload()">Réessayer</app-button>
+        </app-empty-state>
+      </div>
+    } @else if (displayedClients().length === 0) {
+      <div class="p-6">
+        <app-empty-state
+          icon="search"
+          title="Aucun client trouvé"
+          subtitle="Aucun résultat ne correspond à votre recherche ou à vos filtres."
+        >
+          <app-button variant="primary" (click)="openCreate()">
+            <app-icon name="plus" [size]="16" /> Nouveau client
+          </app-button>
+        </app-empty-state>
+      </div>
+    } @else {
+      <app-client-cards
+        [clients]="displayedClients()"
+        [view]="view()"
+        (edit)="openEdit($event)"
+        (remove)="requestDelete($event)"
+      />
+    }
+  </section>
+</div>
+
+@if (formModalOpen()) {
+  <app-client-form-modal
+    [clientToEdit]="editingClient()"
+    (dismiss)="closeModal()"
+    (saved)="onSaved()"
+  />
+}
+
+<app-client-delete-modal
+  [client]="deleting()"
+  (confirm)="onDelete($event)"
+  (dismiss)="deleting.set(null)"
+/>

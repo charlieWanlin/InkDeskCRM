@@ -1,0 +1,334 @@
+<div class="p-6">
+  <a
+    routerLink="/clients"
+    class="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+  >
+    <app-icon name="chevron-right" [size]="14" class="rotate-180" /> Retour aux clients
+  </a>
+
+  @if (client(); as c) {
+
+    <div
+      class="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-5"
+    >
+      <div class="flex items-center gap-4">
+        <span
+          class="grid h-16 w-16 flex-shrink-0 place-items-center rounded-full bg-surface-2 text-lg font-bold text-fg-muted ring-1 ring-border"
+          >{{ initiales() }}</span
+        >
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-xl font-bold text-fg">{{ c.first_name }} {{ c.last_name }}</h1>
+            <app-status-badge [status]="c.status" />
+          </div>
+          <p class="mt-1 text-sm text-fg-muted">
+            {{ c.style || 'Style non renseigné' }} · Client depuis
+            {{ c.created_at | date: 'MMMM yyyy' }}
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <app-button variant="secondary" (click)="modalOuvert.set(true)">
+          <app-icon name="edit" [size]="16" /> Modifier
+        </app-button>
+        <app-button variant="primary" routerLink="/rendez-vous">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4M8 2v4M3 10h18" />
+          </svg>
+          Prendre RDV
+        </app-button>
+      </div>
+    </div>
+
+    <div class="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div class="rounded-2xl border border-border bg-surface p-4">
+        <p class="text-xs text-fg-muted">CA réglé</p>
+        <p class="mt-1 text-xl font-bold text-fg">{{ caRegle() }}</p>
+      </div>
+      <div class="rounded-2xl border border-border bg-surface p-4">
+        <p class="text-xs text-fg-muted">Séances</p>
+        <p class="mt-1 text-xl font-bold text-fg">{{ nbSeances() }}</p>
+      </div>
+      <div class="rounded-2xl border border-border bg-surface p-4">
+        <p class="text-xs text-fg-muted">Dernière visite</p>
+        <p class="mt-1 text-xl font-bold text-fg">{{ derniereVisite() }}</p>
+      </div>
+      <div class="rounded-2xl border border-border bg-surface p-4">
+        <p class="text-xs text-fg-muted">Prochain RDV</p>
+        <p class="mt-1 text-xl font-bold text-fg">{{ prochainRdv() }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+
+      <div class="flex flex-col gap-4 lg:col-span-2">
+
+        <section class="rounded-2xl border border-border bg-surface">
+          <div class="flex items-center justify-between border-b border-border px-5 py-4">
+            <h2 class="font-semibold text-fg">Projets &amp; séances</h2>
+            <app-button variant="secondary" size="sm" routerLink="/projets">
+              <app-icon name="plus" [size]="14" /> Ajouter
+            </app-button>
+          </div>
+          <ul class="divide-y divide-border">
+            @for (p of projets(); track p.id) {
+              <li
+                [routerLink]="['/projets', p.id]"
+                class="flex cursor-pointer items-center gap-3 px-5 py-3.5 transition hover:bg-surface-2"
+              >
+                <span
+                  class="grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-primary-soft text-primary"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 2 2 7l10 5 10-5-10-5z" />
+                    <path d="m2 17 10 5 10-5M2 12l10 5 10-5" />
+                  </svg>
+                </span>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-semibold text-fg">{{ p.titre }}</p>
+                  <p class="truncate text-xs text-fg-muted">{{ p.detail }}</p>
+                </div>
+                <span
+                  class="rounded-full px-2.5 py-0.5 text-xs font-medium {{
+                    statutProjetClasses(p.statut)
+                  }}"
+                  >{{ p.avancement }}</span
+                >
+                <span class="w-16 text-right text-sm font-semibold text-fg">{{ p.montant }}</span>
+                <app-icon name="chevron-right" [size]="16" class="text-fg-subtle" />
+              </li>
+            } @empty {
+              <li class="px-5 py-8 text-center text-sm text-fg-muted">
+                Aucun projet pour ce client.
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="rounded-2xl border border-border bg-surface">
+          <div class="flex items-center justify-between border-b border-border px-5 py-4">
+            <h2 class="font-semibold text-fg">Devis &amp; factures</h2>
+            <app-button variant="secondary" size="sm" routerLink="/devis">
+              <app-icon name="plus" [size]="14" /> Nouveau devis
+            </app-button>
+          </div>
+          <ul class="divide-y divide-border">
+            @for (d of documents(); track d.numero) {
+              <li
+                [routerLink]="d.lien"
+                class="flex cursor-pointer items-center gap-3 px-5 py-3.5 transition hover:bg-surface-2"
+              >
+                <span
+                  class="grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-surface-2 text-fg-muted"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <path d="M14 2v6h6M9 13h6M9 17h4" />
+                  </svg>
+                </span>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-semibold text-fg">{{ d.numero }}</p>
+                  <p class="truncate text-xs text-fg-muted">{{ d.type }} · {{ d.objet }}</p>
+                </div>
+                <span
+                  class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ docBadge(d.variant) }}"
+                  >{{ d.statut }}</span
+                >
+                <span class="w-16 text-right text-sm font-semibold text-fg">{{ d.montant }}</span>
+                <app-icon name="chevron-right" [size]="16" class="text-fg-subtle" />
+              </li>
+            } @empty {
+              <li class="px-5 py-8 text-center text-sm text-fg-muted">
+                Aucun devis ni facture pour ce client.
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="rounded-2xl border border-border bg-surface p-5">
+          <h2 class="mb-4 font-semibold text-fg">Historique</h2>
+          <ol class="relative flex flex-col gap-4 border-l border-border pl-5">
+            @for (h of historique(); track $index) {
+              <li class="relative">
+                <span
+                  class="absolute -left-[27px] top-1 h-3 w-3 rounded-full ring-4 ring-surface"
+                  [class]="h.actif ? 'bg-primary' : 'bg-border-strong'"
+                ></span>
+                @if (h.lien) {
+                  <a
+                    [routerLink]="h.lien"
+                    class="text-sm font-medium text-fg transition hover:text-primary hover:underline"
+                    >{{ h.texte }}</a
+                  >
+                } @else {
+                  <p class="text-sm font-medium text-fg">{{ h.texte }}</p>
+                }
+                <p class="text-xs text-fg-subtle">{{ h.date }}</p>
+              </li>
+            }
+          </ol>
+        </section>
+      </div>
+
+      <div class="flex flex-col gap-4">
+
+        <section class="rounded-2xl border border-border bg-surface p-5">
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="font-semibold text-fg">Coordonnées</h2>
+            <button
+              (click)="modalOuvert.set(true)"
+              title="Modifier"
+              class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-surface-2 hover:text-fg"
+            >
+              <app-icon name="edit" [size]="15" />
+            </button>
+          </div>
+          <dl class="flex flex-col divide-y divide-border text-sm">
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Téléphone</dt>
+              <dd>
+                @if (c.phone) {
+                  <a
+                    href="tel:{{ c.phone }}"
+                    class="font-semibold text-fg hover:text-primary hover:underline"
+                    >{{ c.phone }}</a
+                  >
+                } @else {
+                  <span class="font-semibold text-fg">—</span>
+                }
+              </dd>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">E-mail</dt>
+              <dd class="truncate pl-3">
+                @if (c.email) {
+                  <a
+                    href="mailto:{{ c.email }}"
+                    class="font-semibold text-fg hover:text-primary hover:underline"
+                    >{{ c.email }}</a
+                  >
+                } @else {
+                  <span class="font-semibold text-fg">—</span>
+                }
+              </dd>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Ville</dt>
+              <dd class="font-semibold text-fg">{{ c.address || '—' }}</dd>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Naissance</dt>
+              <dd class="font-semibold text-fg">
+                @if (c.birthdate) {
+                  {{ c.birthdate | date: 'dd/MM/yyyy' }} ({{ age(c.birthdate) }} ans)
+                } @else {
+                  —
+                }
+              </dd>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Style favori</dt>
+              <dd class="font-semibold text-fg">{{ c.style || '—' }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="rounded-2xl border border-border bg-surface p-5">
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="font-semibold text-fg">Santé &amp; allergies</h2>
+            <button
+              (click)="modalOuvert.set(true)"
+              title="Modifier"
+              class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-surface-2 hover:text-fg"
+            >
+              <app-icon name="edit" [size]="15" />
+            </button>
+          </div>
+          <dl class="flex flex-col divide-y divide-border text-sm">
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Allergies</dt>
+              <dd>
+                @if (c.allergies) {
+                  <span
+                    class="rounded-full bg-warning-soft px-2.5 py-0.5 text-xs font-medium text-warning"
+                    >{{ c.allergies }}</span
+                  >
+                } @else {
+                  <span
+                    class="rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-medium text-success"
+                    >Aucune</span
+                  >
+                }
+              </dd>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+              <dt class="text-fg-muted">Antécédents</dt>
+              <dd>
+                @if (c.health_notes) {
+                  <span class="font-semibold text-fg">{{ c.health_notes }}</span>
+                } @else {
+                  <span
+                    class="rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-medium text-success"
+                    >Aucun</span
+                  >
+                }
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="rounded-2xl border border-border bg-surface p-5">
+          <div class="mb-2 flex items-center justify-between">
+            <h2 class="font-semibold text-fg">Notes</h2>
+            <button
+              (click)="modalOuvert.set(true)"
+              title="Modifier"
+              class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-surface-2 hover:text-fg"
+            >
+              <app-icon name="edit" [size]="15" />
+            </button>
+          </div>
+          <p class="text-sm text-fg-muted">{{ c.notes || 'Aucune note pour ce client.' }}</p>
+        </section>
+      </div>
+    </div>
+  } @else {
+    <p class="py-20 text-center text-sm text-fg-subtle">Chargement de la fiche…</p>
+  }
+</div>
+
+@if (modalOuvert() && client(); as c) {
+  <app-client-form-modal
+    [clientToEdit]="c"
+    (dismiss)="modalOuvert.set(false)"
+    (saved)="onEnregistre()"
+  />
+}

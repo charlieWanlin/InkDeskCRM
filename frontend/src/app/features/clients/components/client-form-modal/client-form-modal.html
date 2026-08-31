@@ -1,0 +1,166 @@
+<div class="fixed flex inset-0 z-50 items-center justify-center bg-black/40 p-4">
+  <div
+    class="w-full max-w-2xl rounded-2xl bg-surface shadow-xl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cfm-title"
+  >
+    <div class="flex items-center justify-between border-b border-border p-5">
+      <div>
+        <h3 id="cfm-title" class="text-lg font-bold text-fg">
+          {{ clientToEdit() ? 'Modifier le client' : 'Nouveau client' }}
+        </h3>
+        <p class="text-sm text-fg-muted">
+          {{ clientToEdit() ? 'Modifiez la fiche client' : 'Ajoutez une fiche client' }}
+        </p>
+      </div>
+      <button
+        (click)="dismiss.emit()"
+        class="grid h-8 w-8 place-items-center rounded-lg border border-border text-fg-muted hover:bg-surface-2 cursor-pointer"
+      >
+        ✕
+      </button>
+    </div>
+
+    <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+      <div class="grid grid-cols-2 gap-4 p-5">
+        <div class="flex flex-col gap-1.5">
+          <label for="c-prenom" class="text-sm font-semibold text-fg">Prénom</label
+          ><input
+            id="c-prenom"
+            class="h-11 rounded-xl border border-border px-3.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            formControlName="firstName"
+          />
+          @if (error('firstName'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-nom" class="text-sm font-semibold text-fg">Nom</label
+          ><input
+            id="c-nom"
+            class="h-11 rounded-xl border border-border px-3.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            formControlName="lastName"
+          />
+          @if (error('lastName'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-email" class="text-sm font-semibold text-fg">E-mail</label
+          ><input
+            id="c-email"
+            class="h-11 rounded-xl border border-border px-3.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            formControlName="email"
+          />
+          @if (error('email'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-tel" class="text-sm font-semibold text-fg">Téléphone</label
+          ><input
+            id="c-tel"
+            class="h-11 rounded-xl border border-border px-3.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            formControlName="phone"
+          />
+          @if (error('phone'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-ville" class="text-sm font-semibold text-fg">Ville</label
+          ><input
+            id="c-ville"
+            class="h-11 rounded-xl border border-border px-3.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            formControlName="address"
+          />
+          @if (error('address'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-naiss" class="text-sm font-semibold text-fg">Date de naissance</label
+          ><input
+            type="date"
+            formControlName="birthdate"
+            id="c-naiss"
+            class="h-11 rounded-xl border border-border px-3.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+          @if (error('birthdate'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-style" class="text-sm font-semibold text-fg">Style favori</label
+          ><select
+            formControlName="style"
+            id="c-style"
+            class="h-11 rounded-xl border border-border bg-surface px-3 text-sm outline-none focus:border-primary"
+          >
+            <option value="">— Choisir un style —</option>
+            <option value="Blackwork">Blackwork</option>
+            <option value="Realisme">Réalisme</option>
+            <option value="Fine line">Fine line</option>
+            <option value="Old school">Old school</option>
+            <option value="Lettrage">Lettrage</option>
+            <option value="Ornemental">Ornemental</option>
+          </select>
+          @if (error('style'); as m) {
+            <span class="text-xs text-danger">{{ m }}</span>
+          }
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-statut" class="text-sm font-semibold text-fg">Statut</label
+          ><select
+            formControlName="status"
+            id="c-statut"
+            class="h-11 rounded-xl border border-border bg-surface px-3 text-sm outline-none focus:border-primary"
+          >
+            <option value="prospect">Prospect</option>
+            <option value="actif">Actif</option>
+            <option value="inactif">Inactif</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-allerg" class="text-sm font-semibold text-fg">Allergies</label
+          ><input
+            id="c-allerg"
+            placeholder="Aucune"
+            formControlName="allergies"
+            class="h-11 rounded-xl border border-border px-3.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="c-antecedents" class="text-sm font-semibold text-fg"
+            >Antécédents médicaux</label
+          ><input
+            id="c-antecedents"
+            placeholder="Aucun"
+            formControlName="healthNotes"
+            class="h-11 rounded-xl border border-border px-3.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+        <div class="col-span-2 flex flex-col gap-1.5">
+          <label for="c-notes" class="text-sm font-semibold text-fg">Notes à savoir</label
+          ><textarea
+            id="c-notes"
+            rows="3"
+            placeholder="Préférences, remarques…"
+            formControlName="notes"
+            class="rounded-xl border border-border p-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          ></textarea>
+        </div>
+      </div>
+      @if (serverError()) {
+        <p class="px-5 pt-1 text-sm text-danger">{{ serverError() }}</p>
+      }
+      <div class="flex justify-end gap-2 border-t border-border p-5">
+        <app-button variant="secondary" type="button" (click)="dismiss.emit()">Annuler</app-button>
+        <app-button variant="primary" type="submit">
+          {{ clientToEdit() ? '✓ Enregistrer' : '✓ Ajouter le client' }}
+        </app-button>
+      </div>
+    </form>
+  </div>
+</div>
