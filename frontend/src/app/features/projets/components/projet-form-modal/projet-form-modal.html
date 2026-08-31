@@ -1,0 +1,136 @@
+<div class="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+  <div
+    class="w-full max-w-lg rounded-2xl border border-border bg-surface p-6 shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pfm-title"
+  >
+    <div class="mb-4 flex items-center justify-between">
+      <h3 id="pfm-title" class="text-lg font-bold text-fg">
+        {{ estEdition() ? 'Modifier le projet' : 'Nouveau projet' }}
+      </h3>
+      <button
+        type="button"
+        (click)="fermer.emit()"
+        aria-label="Fermer"
+        class="grid h-8 w-8 place-items-center rounded-lg text-fg-muted transition hover:bg-surface-2 hover:text-fg"
+      >
+        <app-icon name="close" [size]="16" />
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="valider()">
+      <div class="flex flex-col gap-4">
+
+        <div>
+          <span class="mb-1 block text-xs font-medium text-fg-muted">Client</span>
+          @if (client(); as c) {
+            <button
+              type="button"
+              (click)="pickerOuvert.set(true)"
+              class="flex w-full items-center gap-3 rounded-lg border border-border bg-surface p-2.5 text-left transition hover:border-border-strong"
+            >
+              <app-avatar size="sm" [initials]="c.initiales" />
+              <span class="flex-1 text-sm font-semibold text-fg">{{ c.nom }}</span>
+              <span class="text-xs font-medium text-primary">Changer</span>
+            </button>
+          } @else {
+            <button
+              type="button"
+              (click)="pickerOuvert.set(true)"
+              class="flex h-11 w-full items-center gap-2 rounded-lg border border-dashed border-border-strong px-3 text-sm text-fg-muted transition hover:border-primary hover:text-primary"
+            >
+              <app-icon name="plus" [size]="16" /> Choisir un client
+            </button>
+          }
+        </div>
+
+        <label class="block">
+          <span class="mb-1 block text-xs font-medium text-fg-muted">Titre du projet</span>
+          <input
+            formControlName="titre"
+            placeholder="ex : Manchette florale"
+            class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+        </label>
+
+        <div class="grid grid-cols-2 gap-4">
+
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Style</span>
+            <select
+              formControlName="style"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            >
+              @for (s of styles; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Emplacement</span>
+            <input
+              formControlName="zone"
+              placeholder="ex : Avant-bras"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Montant (€)</span>
+            <input
+              type="number"
+              min="0"
+              formControlName="montant"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Séances prévues</span>
+            <input
+              type="number"
+              min="1"
+              formControlName="seancesPrevues"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Statut</span>
+            <select
+              formControlName="statut"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            >
+              @for (s of statuts; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        @if (erreur()) {
+          <p class="text-sm text-danger">{{ erreur() }}</p>
+        }
+      </div>
+
+      <div class="mt-6 flex justify-end gap-3">
+        <app-button variant="secondary" (click)="fermer.emit()">Annuler</app-button>
+        <app-button variant="primary" type="submit">
+          {{ estEdition() ? 'Enregistrer' : 'Créer le projet' }}
+        </app-button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-client-picker
+  [clients]="clients()"
+  [(ouvert)]="pickerOuvert"
+  titre="Choisir un client"
+  (choisi)="onClientChoisi($event)"
+/>

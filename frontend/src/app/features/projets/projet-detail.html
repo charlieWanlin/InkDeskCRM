@@ -1,0 +1,320 @@
+<div class="p-6">
+  <a
+    routerLink="/projets"
+    class="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+  >
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+    Retour aux projets
+  </a>
+
+  @if (projet(); as p) {
+
+    <div class="mb-5 flex flex-wrap items-start justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <app-avatar size="lg" [initials]="p.initiales" />
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-fg-subtle">
+            {{ reference() }}
+          </p>
+          <h1 class="text-2xl font-bold text-fg">{{ p.titre }}</h1>
+          <p class="mt-0.5 text-sm text-fg-muted">
+            <a
+              [routerLink]="['/clients', p.clientId]"
+              class="font-semibold text-primary hover:underline"
+              >{{ p.clientNom }}</a
+            >
+            · {{ p.style }} · {{ p.zone }}
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="rounded-full px-3 py-1 text-xs font-medium {{ statutClass(p.statut) }}">{{
+          p.statut
+        }}</span>
+        <app-button variant="secondary" size="sm" (click)="formOuvert.set(true)">
+          <app-icon name="edit" [size]="14" /> Modifier
+        </app-button>
+        <app-button variant="primary" size="sm" (click)="ouvrirNouvelleSeance()">
+          <app-icon name="plus" [size]="14" /> Planifier une séance
+        </app-button>
+        <div class="relative">
+          <button
+            (click)="$event.stopPropagation(); menuOuvert.set(!menuOuvert())"
+            class="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface text-fg-muted transition hover:bg-surface-2 hover:text-fg"
+            aria-label="Actions"
+          >
+            <app-icon name="kebab" [size]="16" />
+          </button>
+          @if (menuOuvert()) {
+            <div
+              class="absolute right-0 top-11 z-20 w-52 rounded-xl border border-border bg-surface p-1 shadow-lg"
+            >
+              @if (p.statut !== 'Terminé') {
+                <button
+                  (click)="changerStatutProjet('Terminé')"
+                  class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-fg hover:bg-surface-2"
+                >
+                  <app-icon name="check-circle" [size]="15" /> Marquer terminé
+                </button>
+              } @else {
+                <button
+                  (click)="changerStatutProjet('En cours')"
+                  class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-fg hover:bg-surface-2"
+                >
+                  <app-icon name="edit" [size]="15" /> Rouvrir le projet
+                </button>
+              }
+              <div class="my-1 border-t border-border"></div>
+              <button
+                (click)="menuOuvert.set(false); confirmationOuverte.set(true)"
+                class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-danger hover:bg-danger-soft"
+              >
+                <app-icon name="trash" [size]="15" /> Supprimer le projet
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <section class="mb-4 rounded-2xl border border-border bg-surface p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="text-sm font-semibold text-fg">Avancement du projet</p>
+          <p class="text-sm text-fg-muted">{{ faites() }} / {{ total() }} séances réalisées</p>
+        </div>
+        <div class="text-right">
+          <p class="text-2xl font-bold text-primary">{{ avancement() }}%</p>
+          <p class="text-sm text-fg-muted">
+            {{ p.montant | currency: 'EUR' : 'symbol' : '1.0-0' : 'fr' }} · devis estimé
+          </p>
+        </div>
+      </div>
+      <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-surface-2">
+        <div
+          class="h-full rounded-full bg-primary transition-all"
+          [style.width.%]="avancement()"
+        ></div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+
+      <section class="rounded-2xl border border-border bg-surface p-5 lg:col-span-2">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="font-semibold text-fg">Séances</h2>
+          <app-button variant="secondary" size="sm" (click)="ouvrirNouvelleSeance()">
+            <app-icon name="plus" [size]="14" /> Planifier
+          </app-button>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          @for (s of p.seances; track s.id) {
+            <div class="rounded-xl border border-border p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="rounded-full px-2 py-0.5 text-[11px] font-medium {{
+                        statutSeanceClass(s.statut)
+                      }}"
+                      >{{ s.statut }}</span
+                    >
+                    <h3 class="truncate font-semibold text-fg">{{ s.titre }}</h3>
+                  </div>
+                  <p class="mt-1 text-sm text-fg-muted">
+                    {{ s.date | date: 'EEE d MMM y' : '' : 'fr' }}
+                    @if (s.heure) {
+                      · {{ s.heure }}
+                    }
+                  </p>
+                  @if (s.notes) {
+                    <p class="mt-1 text-sm text-fg">{{ s.notes }}</p>
+                  }
+                </div>
+                <div class="flex shrink-0 items-center gap-1">
+                  <button
+                    (click)="basculerSeance(s)"
+                    [title]="s.statut === 'Réalisée' ? 'Marquer non réalisée' : 'Marquer réalisée'"
+                    class="grid h-8 w-8 place-items-center rounded-lg border transition"
+                    [class]="
+                      s.statut === 'Réalisée'
+                        ? 'border-success bg-success-soft text-success'
+                        : 'border-border text-fg-muted hover:bg-surface-2 hover:text-fg'
+                    "
+                  >
+                    <app-icon name="check" [size]="15" />
+                  </button>
+                  <button
+                    (click)="ouvrirEditionSeance(s)"
+                    title="Modifier la séance"
+                    class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-surface-2 hover:text-fg"
+                  >
+                    <app-icon name="edit" [size]="15" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div
+              class="grid place-items-center rounded-xl border border-dashed border-border-strong p-8 text-center"
+            >
+              <p class="text-sm font-semibold text-fg">Aucune séance planifiée</p>
+              <p class="mt-1 text-sm text-fg-muted">
+                Planifiez la première séance pour démarrer le projet.
+              </p>
+              <app-button variant="primary" size="sm" (click)="ouvrirNouvelleSeance()">
+                <app-icon name="plus" [size]="14" /> Planifier une séance
+              </app-button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <div class="flex flex-col gap-4">
+
+        <section class="rounded-2xl border border-border bg-surface p-5">
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="font-semibold text-fg">Photos</h2>
+            <span class="text-xs text-fg-subtle">{{ photos().length }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            @for (ph of photos(); track ph.id) {
+              <img
+                [src]="ph.url"
+                [alt]="ph.legende || 'Photo projet'"
+                class="aspect-square w-full rounded-lg border border-border object-cover"
+              />
+            }
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-border bg-surface p-5">
+          <h2 class="mb-3 font-semibold text-fg">Devis & factures</h2>
+          <div class="flex flex-col gap-1.5">
+            @for (d of devisClient(); track d.id) {
+              <a
+                [routerLink]="['/devis', d.id]"
+                class="flex items-center justify-between rounded-lg border border-border p-2.5 transition hover:border-primary hover:bg-primary-soft"
+              >
+                <span class="flex items-center gap-2 text-sm">
+                  <app-icon name="edit" [size]="14" />
+                  <span class="font-semibold text-fg">{{ d.numero }}</span>
+                </span>
+                <span class="flex items-center gap-2">
+                  <span
+                    class="rounded-full px-2 py-0.5 text-[11px] font-medium {{
+                      statutDevisClass(d.statut)
+                    }}"
+                    >{{ d.statut }}</span
+                  >
+                  <span class="text-sm font-semibold text-fg">{{
+                    totalDevis(d) | currency: 'EUR' : 'symbol' : '1.0-0' : 'fr'
+                  }}</span>
+                </span>
+              </a>
+            }
+            @for (f of facturesClient(); track f.id) {
+              <a
+                [routerLink]="['/factures', f.id]"
+                class="flex items-center justify-between rounded-lg border border-border p-2.5 transition hover:border-primary hover:bg-primary-soft"
+              >
+                <span class="flex items-center gap-2 text-sm">
+                  <app-icon name="inbox" [size]="14" />
+                  <span class="font-semibold text-fg">{{ f.numero }}</span>
+                </span>
+                <span class="flex items-center gap-2">
+                  <span
+                    class="rounded-full px-2 py-0.5 text-[11px] font-medium {{
+                      statutDevisClass(f.statut)
+                    }}"
+                    >{{ f.statut }}</span
+                  >
+                  <span class="text-sm font-semibold text-fg">{{
+                    totalFacture(f) | currency: 'EUR' : 'symbol' : '1.0-0' : 'fr'
+                  }}</span>
+                </span>
+              </a>
+            }
+            @if (devisClient().length === 0 && facturesClient().length === 0) {
+              <p class="py-4 text-center text-sm italic text-fg-subtle">
+                Aucun document pour ce client.
+              </p>
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+  } @else {
+    <div
+      class="grid place-items-center rounded-2xl border border-dashed border-border-strong bg-surface p-12 text-center"
+    >
+      <p class="font-semibold text-fg">Projet introuvable</p>
+      <p class="mt-1 text-sm text-fg-muted">Ce projet n'existe pas ou a été supprimé.</p>
+      <a
+        routerLink="/projets"
+        class="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
+        >Retour aux projets</a
+      >
+    </div>
+  }
+</div>
+
+@if (formOuvert() && projet(); as p) {
+  <app-projet-form-modal
+    [projet]="p"
+    (enregistrer)="onEnregistrerProjet($event)"
+    (fermer)="formOuvert.set(false)"
+  />
+}
+
+@if (rdvOuvert() && projet(); as p) {
+  <app-rdv-form-modal
+    [seance]="seanceEnEdition()"
+    [projetId]="p.id"
+    [verrouille]="true"
+    (enregistrer)="onEnregistrerRdv($event)"
+    (supprimer)="onSupprimerRdv($event)"
+    (fermer)="rdvOuvert.set(false)"
+  />
+}
+
+@if (confirmationOuverte()) {
+  <div class="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+    <div
+      class="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="projd-del-title"
+    >
+      <div
+        class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger-soft text-danger"
+      >
+        <app-icon name="trash" [size]="22" />
+      </div>
+      <h3 id="projd-del-title" class="mt-4 text-center text-lg font-bold text-fg">
+        Supprimer ce projet ?
+      </h3>
+      <p class="mt-2 text-center text-sm text-fg-muted">
+        Cette action est irréversible. Le projet et ses séances seront retirés.
+      </p>
+      <div class="mt-6 grid grid-cols-2 gap-3">
+        <app-button variant="secondary" (click)="confirmationOuverte.set(false)"
+          >Annuler</app-button
+        >
+        <app-button variant="danger" (click)="supprimer()">Supprimer</app-button>
+      </div>
+    </div>
+  </div>
+}

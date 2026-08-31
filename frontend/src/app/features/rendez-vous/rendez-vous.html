@@ -1,0 +1,107 @@
+<div class="p-4 sm:p-6">
+  <app-page-header
+    title="Rendez-vous"
+    [subtitle]="nbAvenir() + ' à venir · ' + nbPasses() + ' passé' + (nbPasses() > 1 ? 's' : '')"
+  >
+    <app-button variant="primary" (click)="ouvrirCreation()">
+      <app-icon name="plus" [size]="16" /> Nouveau rendez-vous
+    </app-button>
+  </app-page-header>
+
+  <div class="mb-4 inline-flex rounded-lg border border-border bg-surface p-0.5">
+    <button
+      type="button"
+      (click)="filtre.set('avenir')"
+      class="h-9 rounded-md px-4 text-sm font-medium transition"
+      [class]="filtre() === 'avenir' ? 'bg-primary text-white' : 'text-fg-muted hover:text-fg'"
+    >
+      À venir ({{ nbAvenir() }})
+    </button>
+    <button
+      type="button"
+      (click)="filtre.set('passes')"
+      class="h-9 rounded-md px-4 text-sm font-medium transition"
+      [class]="filtre() === 'passes' ? 'bg-primary text-white' : 'text-fg-muted hover:text-fg'"
+    >
+      Passés ({{ nbPasses() }})
+    </button>
+  </div>
+
+  <section class="overflow-hidden rounded-2xl border border-border bg-surface">
+    @if (isLoading()) {
+      <div class="grid place-items-center p-12 text-sm text-fg-muted">Chargement des rendez-vous…</div>
+    } @else if (isError()) {
+      <div class="p-6">
+        <app-empty-state
+          icon="x-circle"
+          title="Impossible de charger les rendez-vous"
+          subtitle="Vérifiez que le serveur est démarré, puis réessayez."
+        />
+      </div>
+    } @else if (groupes().length === 0) {
+      <div class="p-6">
+        <app-empty-state
+          icon="inbox"
+          [title]="filtre() === 'avenir' ? 'Aucun rendez-vous à venir' : 'Aucun rendez-vous passé'"
+          subtitle="Créez un rendez-vous pour planifier une séance de tatouage."
+        >
+          <app-button variant="primary" (click)="ouvrirCreation()">
+            <app-icon name="plus" [size]="16" /> Nouveau rendez-vous
+          </app-button>
+        </app-empty-state>
+      </div>
+    } @else {
+      @for (groupe of groupes(); track groupe.cle) {
+
+        <div class="flex items-center gap-2 border-b border-border bg-surface-2/40 px-5 py-2.5">
+          <span class="text-sm font-semibold text-fg">{{ groupe.libelle }}</span>
+          @if (groupe.estAujourdhui) {
+            <span class="rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-white">Aujourd'hui</span>
+          }
+        </div>
+
+        <ul class="divide-y divide-border">
+          @for (r of groupe.items; track r.seance.id) {
+            <li>
+              <button
+                type="button"
+                (click)="ouvrirEdition(r)"
+                class="flex w-full items-center gap-4 px-5 py-3.5 text-left transition hover:bg-surface-2"
+              >
+
+                <span class="w-14 shrink-0 text-sm font-semibold tabular-nums text-fg">
+                  {{ r.seance.heure || '—' }}
+                </span>
+
+                <app-avatar size="sm" [initials]="r.clientNom.slice(0, 2).toUpperCase()" />
+
+                <div class="min-w-0 flex-1">
+                  <p class="truncate font-medium text-fg">{{ r.clientNom || 'Client' }}</p>
+                  <p class="truncate text-xs text-fg-muted">
+                    {{ r.seance.titre }}@if (r.projetTitre) { · {{ r.projetTitre }} }
+                  </p>
+                </div>
+
+                <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium {{ statutClass(r.seance.statut) }}">
+                  {{ r.seance.statut }}
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </section>
+</div>
+
+@if (rdvOuvert()) {
+  <app-rdv-form-modal
+    [seance]="seanceEnEdition()"
+    [projetId]="editProjetId()"
+    [dateInitiale]="dateInitiale()"
+    [verrouille]="seanceEnEdition() !== null"
+    (enregistrer)="onEnregistrer($event)"
+    (supprimer)="onSupprimer($event)"
+    (fermer)="rdvOuvert.set(false)"
+  />
+}

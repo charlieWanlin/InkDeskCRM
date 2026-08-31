@@ -1,0 +1,124 @@
+<div class="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+  <div
+    class="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="rfm-title"
+  >
+    <div class="mb-4 flex items-center justify-between">
+      <h3 id="rfm-title" class="text-lg font-bold text-fg">
+        {{ estEdition() ? 'Modifier le rendez-vous' : 'Nouveau rendez-vous' }}
+      </h3>
+      <button
+        type="button"
+        (click)="fermer.emit()"
+        aria-label="Fermer"
+        class="grid h-8 w-8 place-items-center rounded-lg text-fg-muted transition hover:bg-surface-2 hover:text-fg"
+      >
+        <app-icon name="close" [size]="16" />
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="valider()">
+      <div class="flex flex-col gap-4">
+
+        <div>
+          <span class="mb-1 block text-xs font-medium text-fg-muted">Projet</span>
+          @if (verrouille()) {
+            <div
+              class="flex h-10 items-center rounded-lg border border-border bg-surface-2 px-3 text-sm text-fg"
+            >
+              {{ projetCourant()?.titre }} · {{ projetCourant()?.clientNom }}
+            </div>
+          } @else {
+            <select
+              formControlName="projetId"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            >
+              @for (p of projets(); track p.id) {
+                <option [value]="p.id">{{ p.titre }} · {{ p.clientNom }}</option>
+              }
+            </select>
+          }
+        </div>
+
+        <label class="block">
+          <span class="mb-1 block text-xs font-medium text-fg-muted">Intitulé</span>
+          <input
+            formControlName="titre"
+            placeholder="ex : Séance 2 — Remplissage"
+            class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+        </label>
+
+        <div class="grid grid-cols-2 gap-4">
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Date</span>
+            <input
+              type="date"
+              formControlName="date"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Heure</span>
+            <input
+              type="time"
+              formControlName="heure"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="mb-1 block text-xs font-medium text-fg-muted">Statut</span>
+          <select
+            formControlName="statut"
+            class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          >
+            @for (s of statuts; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="block">
+          <span class="mb-1 block text-xs font-medium text-fg-muted">Notes</span>
+          <textarea
+            formControlName="notes"
+            rows="2"
+            placeholder="Remarques, préparation…"
+            class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          ></textarea>
+        </label>
+
+        @if (erreur()) {
+          <p class="text-sm text-danger">{{ erreur() }}</p>
+        }
+      </div>
+
+      <div class="mt-6 flex items-center justify-between gap-3">
+        @if (estEdition()) {
+          <app-button variant="ghost" (click)="demanderSuppression()">
+            <app-icon name="trash" [size]="15" /> Supprimer
+          </app-button>
+        } @else {
+          <span></span>
+        }
+        <div class="flex items-center gap-3">
+          @if (estEdition() && verrouille() && projetCourant(); as pc) {
+            <a
+              [routerLink]="['/projets', pc.id]"
+              class="text-sm font-medium text-primary hover:underline"
+              >Voir le projet</a
+            >
+          }
+          <app-button variant="secondary" (click)="fermer.emit()">Annuler</app-button>
+          <app-button variant="primary" type="submit">
+            {{ estEdition() ? 'Enregistrer' : 'Planifier' }}
+          </app-button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
