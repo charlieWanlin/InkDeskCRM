@@ -1,22 +1,28 @@
 -- =====================================================================
 -- Données de démonstration — CRM Tatooshop
 -- À exécuter APRÈS schema.sql (qui recrée les tables vides).
--- Compte de test : admin@tatooshop.test / admin123
+-- Comptes de test : admin@tatooshop.test / admin123  (Emma, role admin)
+--                   camille@tatooshop.test / admin123 (Camille, role artiste)
 -- =====================================================================
 
 USE crm_tatooshop;
 
--- Artiste (tenant unique pour la démo).
+-- Artistes du studio (multi-tenant : chacun possède ses propres données).
 INSERT INTO users (id, name, email, password_hash, role, phone, bio) VALUES
   (1, 'Emma Clément', 'admin@tatooshop.test', '$2y$12$8QJ./Vdeuqb9eiWWzvLVduMq4wswGQEuSvzfnp4lHm4QAVEqCmceK', 'admin',
      '06 12 34 56 78', 'Tatoueuse fine line et ornemental. Emma accompagne chaque client avec un suivi clair, des devis propres et une ambiance douce au studio.'),
+  (3, 'Camille Roy', 'camille@tatooshop.test', '$2y$12$8QJ./Vdeuqb9eiWWzvLVduMq4wswGQEuSvzfnp4lHm4QAVEqCmceK', 'artiste',
+     '06 66 77 88 99', NULL);
 
--- Studio de l'artiste principal (user 1).
+-- Studios : une ligne par artiste. Sans elle, Studio::forUser() en crée
+-- une automatiquement nommee "Mon studio".
 INSERT INTO studios (user_id, name, subtitle, email, phone, address, siret, tva_mention,
                      quote_prefix, invoice_prefix, payment_terms, deposit_terms, notify_rdv, notify_invoices) VALUES
   (1, 'L''encre de Lune', 'LadyMoon', 'contact@ladymoonshop.fr', '04 78 00 00 00',
    '12 rue de la Lune, 69001 Lyon', '912 345 678 00014', 'TVA non applicable, art. 293 B du CGI',
-   'DEV', 'FAC', 'Paiement comptant à réception', '30 % à la réservation', 1, 1);
+   'DEV', 'FAC', 'Paiement comptant à réception', '30 % à la réservation', 1, 1),
+  (3, 'L''encre de Lune', NULL, NULL, NULL, NULL, NULL, NULL,
+   'DEV', 'FAC', NULL, NULL, 1, 1);
 
 -- Clients.
 INSERT INTO clients (id, user_id, first_name, last_name, email, phone, style, status, created_at) VALUES
