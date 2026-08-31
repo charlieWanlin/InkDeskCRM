@@ -1,0 +1,91 @@
+<div
+  class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+  [class.md:hidden]="view() === 'liste'"
+>
+  @for (f of flashs(); track f.id) {
+    <app-flash-card
+      [flash]="f"
+      (edit)="edit.emit(f)"
+      (remove)="remove.emit(f)"
+    />
+  }
+</div>
+@if (view() === 'liste') {
+
+  <div class="hidden overflow-x-auto md:block">
+    <table class="w-full min-w-[640px] text-left text-sm">
+      <thead class="border-y border-border text-xs uppercase tracking-wide text-fg-subtle">
+        <tr>
+          <th class="px-5 py-3 font-semibold">Flash</th>
+          <th class="px-5 py-3 font-semibold">Style</th>
+          <th class="px-5 py-3 font-semibold">Emplacement</th>
+          <th class="px-5 py-3 font-semibold">Taille</th>
+          <th class="px-5 py-3 text-right font-semibold">Prix</th>
+          <th class="px-5 py-3 font-semibold">Statut</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        @for (f of flashs(); track f.id) {
+          <tr class="hover:bg-surface-2">
+            <td class="px-5 py-3">
+              <div class="flex items-center gap-3">
+                @if (f.imageUrl) {
+                  <img
+                    [src]="f.imageUrl"
+                    [alt]="f.name"
+                    class="h-10 w-10 rounded-lg object-cover"
+                  />
+                } @else {
+                  <span
+                    class="grid h-10 w-10 place-items-center rounded-lg bg-surface-2 text-fg-subtle"
+                    ><app-icon name="plus" [size]="16"
+                  /></span>
+                }
+                <span class="font-semibold text-fg">{{ f.name }}</span>
+              </div>
+            </td>
+            <td class="px-5 py-3 text-fg-muted">{{ f.style }}</td>
+            <td class="px-5 py-3 text-fg-muted">{{ f.placement }}</td>
+            <td class="px-5 py-3 text-fg-muted">
+              @if (f.sizeCm) {
+                {{ f.sizeCm }} cm
+              }
+            </td>
+            <td class="px-5 py-3 text-right font-semibold text-fg">
+              {{ f.price | currency: 'EUR' : 'symbol' : '1.0-0' : 'fr' }}
+            </td>
+            <td class="px-5 py-3">
+              <span
+                class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ statusClass(f.status) }}"
+                >{{ statusLabel(f.status) }}</span
+              >
+            </td>
+            <td class="px-5 py-3 text-right">
+              <div class="flex items-center justify-end gap-1">
+                <button
+                  type="button"
+                  (click)="$event.stopPropagation(); edit.emit(f)"
+                  aria-label="Modifier"
+                  title="Modifier"
+                  class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-surface-2 hover:text-fg"
+                >
+                  <app-icon name="edit" [size]="15" />
+                </button>
+                <button
+                  type="button"
+                  (click)="$event.stopPropagation(); remove.emit(f)"
+                  aria-label="Supprimer"
+                  title="Supprimer"
+                  class="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle transition hover:bg-danger-soft hover:text-danger"
+                >
+                  <app-icon name="trash" [size]="15" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

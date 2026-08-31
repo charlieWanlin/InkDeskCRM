@@ -1,0 +1,77 @@
+<div class="p-6">
+  <app-page-header
+    title="Flashs"
+    [subtitle]="flashs().length + ' modèles · ' + available() + ' disponibles'"
+  >
+    <app-button variant="primary" (click)="createFlash()">
+      <app-icon name="plus" [size]="16" /> Nouveau flash
+    </app-button>
+  </app-page-header>
+
+  <app-list-toolbar [(search)]="search" placeholder="Rechercher un flash…">
+    <app-view-toggle [(vue)]="view" />
+  </app-list-toolbar>
+
+  <section class="overflow-hidden rounded-2xl border border-border bg-surface">
+
+    <app-filter-bar>
+      <app-select [(value)]="statusFilter">
+        <option value="">Tous les statuts</option>
+        <option value="disponible">Disponibles</option>
+        <option value="reserve">Réservés</option>
+        <option value="vendu">Vendus</option>
+      </app-select>
+      <app-select [(value)]="styleFilter">
+        <option value="">Tous les styles</option>
+        @for (s of styles; track s) {
+          <option [value]="s">{{ s }}</option>
+        }
+      </app-select>
+      <app-select [(value)]="sort">
+        <option value="recent">Plus récents</option>
+        <option value="prix_desc">Prix décroissant</option>
+        <option value="prix_asc">Prix croissant</option>
+      </app-select>
+    </app-filter-bar>
+
+    @if (isLoading()) {
+      <div class="grid place-items-center p-12 text-sm text-fg-muted">Chargement des flashs…</div>
+    } @else if (isError()) {
+      <div class="p-6">
+        <app-empty-state
+          icon="x-circle"
+          title="Impossible de charger les flashs"
+          subtitle="Vérifiez que le serveur (MAMP) est démarré, puis réessayez."
+        >
+          <app-button variant="secondary" (click)="reload()">Réessayer</app-button>
+        </app-empty-state>
+      </div>
+    } @else if (flashs().length === 0) {
+      <div class="p-6">
+        <app-empty-state
+          icon="search"
+          title="Aucun flash trouvé"
+          subtitle="Aucun résultat ne correspond à votre recherche ou à vos filtres."
+        >
+          <app-button variant="primary" (click)="createFlash()">
+            <app-icon name="plus" [size]="16" /> Nouveau flash
+          </app-button>
+        </app-empty-state>
+      </div>
+    } @else {
+      <app-flash-cards
+        [flashs]="flashs()"
+        [view]="view()"
+        (edit)="openEdit($event)"
+        (remove)="requestDelete($event)"
+      />
+    }
+  </section>
+</div>
+
+<app-flash-edit-modal [flash]="editing()" (save)="onSave($event)" (dismiss)="editing.set(null)" />
+<app-flash-delete-modal
+  [flash]="deleting()"
+  (confirm)="onDelete($event)"
+  (dismiss)="deleting.set(null)"
+/>

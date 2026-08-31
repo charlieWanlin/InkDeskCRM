@@ -1,0 +1,24 @@
+@if (flash(); as f) {
+  <div class="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+    <div
+      class="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fdm-title"
+    >
+      <div
+        class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-danger-soft text-danger"
+      >
+        <app-icon name="trash" [size]="22" />
+      </div>
+      <h3 id="fdm-title" class="mt-4 text-center text-lg font-bold text-fg">
+        Supprimer « {{ f.name }} » ?
+      </h3>
+      <p class="mt-2 text-center text-sm text-fg-muted">Cette action est irréversible.</p>
+      <div class="mt-6 grid grid-cols-2 gap-3">
+        <app-button variant="secondary" (click)="dismiss.emit()">Annuler</app-button>
+        <app-button variant="danger" (click)="confirm.emit(f)">Supprimer</app-button>
+      </div>
+    </div>
+  </div>
+}

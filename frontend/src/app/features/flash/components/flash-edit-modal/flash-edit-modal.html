@@ -1,0 +1,139 @@
+@if (flash()) {
+  <div class="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+    <div
+      class="w-full max-w-lg rounded-2xl border border-border bg-surface p-6 shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fem-title"
+    >
+      <div class="mb-4 flex items-center justify-between">
+        <h3 id="fem-title" class="text-lg font-bold text-fg">
+          {{ estCreation() ? 'Nouveau flash' : 'Modifier le flash' }}
+        </h3>
+        <button
+          type="button"
+          (click)="dismiss.emit()"
+          class="grid h-8 w-8 place-items-center rounded-lg text-fg-muted transition hover:bg-surface-2 hover:text-fg"
+          aria-label="Fermer"
+        >
+          <app-icon name="close" [size]="16" />
+        </button>
+      </div>
+      <div class="flex flex-col gap-4" [formGroup]="form">
+        <div class="block">
+          <span class="mb-1 block text-xs font-medium text-fg-muted">Image</span>
+          <div class="flex items-center gap-3">
+            <div
+              class="grid h-16 w-16 flex-shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-surface-2"
+            >
+              @if (apercu()) {
+                <img [src]="apercu()" alt="" class="h-full w-full object-cover" />
+              } @else {
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="text-fg-subtle"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.6-3.6a2 2 0 0 0-2.8 0L6 20" />
+                </svg>
+              }
+            </div>
+            <label class="cursor-pointer">
+              <span
+                class="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-medium text-fg transition hover:bg-surface-2"
+              >
+                {{ televersement() ? 'Téléversement…' : 'Choisir un fichier' }}
+              </span>
+              <input
+                type="file"
+                accept="image/png,image/jpeg"
+                class="hidden"
+                (change)="onFichier($event)"
+                [disabled]="televersement()"
+              />
+            </label>
+          </div>
+          @if (erreurImage()) {
+            <p class="mt-1 text-xs font-medium text-danger">{{ erreurImage() }}</p>
+          }
+          <p class="mt-1 text-xs text-fg-subtle">PNG ou JPEG, 5 Mo maximum.</p>
+        </div>
+        <label class="block">
+          <span class="mb-1 block text-xs font-medium text-fg-muted">Nom</span>
+          <input
+            formControlName="name"
+            placeholder="Nom du flash"
+            class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+        </label>
+        <div class="grid grid-cols-2 gap-4">
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Prix (€)</span>
+            <input
+              type="number"
+              min="0"
+              formControlName="price"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Statut</span>
+            <select
+              formControlName="status"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            >
+              @for (s of statuses; track s.value) {
+                <option [value]="s.value">{{ s.label }}</option>
+              }
+            </select>
+          </label>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Style</span>
+            <select
+              formControlName="style"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            >
+              @for (s of styles; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Emplacement</span>
+            <input
+              formControlName="placement"
+              placeholder="ex : Avant-bras"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-fg-muted">Taille (cm)</span>
+            <input
+              type="number"
+              min="0"
+              formControlName="sizeCm"
+              placeholder="ex : 10"
+              class="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-3">
+        <app-button variant="secondary" (click)="dismiss.emit()">Annuler</app-button>
+        <app-button variant="primary" (click)="submit()">{{
+          estCreation() ? 'Créer' : 'Enregistrer'
+        }}</app-button>
+      </div>
+    </div>
+  </div>
+}

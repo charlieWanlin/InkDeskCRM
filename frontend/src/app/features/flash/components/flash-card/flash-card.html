@@ -1,0 +1,65 @@
+<div
+  class="group relative rounded-xl border border-border bg-surface shadow-sm transition duration-200 hover:-translate-y-1 hover:border-border-strong hover:shadow-xl"
+>
+
+  <div class="block w-full text-left">
+    <div class="relative aspect-square overflow-hidden rounded-t-xl bg-surface-2">
+      @if (flash().imageUrl) {
+        <img
+          [src]="flash().imageUrl"
+          [alt]="flash().name"
+          class="absolute inset-0 h-full w-full object-cover"
+        />
+      } @else {
+        <div class="grid h-full place-items-center text-fg-subtle">
+          <app-icon name="plus" [size]="24" />
+        </div>
+      }
+      <span
+        class="absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium {{
+          statusClass(flash().status)
+        }}"
+      >
+        <span class="h-1.5 w-1.5 rounded-full bg-current"></span>{{ statusLabel(flash().status) }}
+      </span>
+    </div>
+    <div class="p-3">
+      <div class="flex items-center justify-between gap-2">
+        <h3 class="truncate font-semibold text-fg">{{ flash().name }}</h3>
+        <span class="shrink-0 font-bold text-primary">{{
+          flash().price | currency: 'EUR' : 'symbol' : '1.0-0' : 'fr'
+        }}</span>
+      </div>
+      <p class="mt-0.5 truncate text-xs text-fg-muted">
+        {{ flash().style }}
+        @if (flash().sizeCm) {
+          · {{ flash().sizeCm }} cm
+        }
+        @if (flash().placement) {
+          · {{ flash().placement }}
+        }
+      </p>
+    </div>
+  </div>
+
+  <div class="absolute right-2 top-2 flex items-center gap-1">
+    <button
+      type="button"
+      (click)="$event.stopPropagation(); edit.emit(flash())"
+      aria-label="Modifier"
+      title="Modifier"
+      class="grid h-8 w-8 place-items-center rounded-lg border border-border bg-surface/95 text-fg-muted shadow-sm backdrop-blur transition hover:text-fg"
+    >
+      <app-icon name="edit" [size]="15" />
+    </button>
+    <button
+      type="button"
+      (click)="$event.stopPropagation(); remove.emit(flash())"
+      aria-label="Supprimer"
+      title="Supprimer"
+      class="grid h-8 w-8 place-items-center rounded-lg border border-border bg-surface/95 text-fg-muted shadow-sm backdrop-blur transition hover:text-danger"
+    >
+      <app-icon name="trash" [size]="15" />
+    </button>
+  </div>
+</div>
