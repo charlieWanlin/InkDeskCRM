@@ -1,0 +1,128 @@
+/* Police Inter (doit rester avant tout autre @import) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Tailwind CSS v4 */
+@import 'tailwindcss';
+
+/* Dark mode piloté par la classe `dark` sur <html> (basculée par ThemeToggle). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Thème de la marque (Tailwind v4 @theme) : ces tokens génèrent les classes utilitaires
+   (--color-wine -> bg-wine, text-wine…). Les neutres reprennent la palette "stone" de Tailwind. */
+@theme {
+  /* Accent de marque (bordeaux tatouage) */
+  --color-wine: #7b2033;
+  --color-wine-dark: #6a1b2c;
+  --color-wine-soft: #f6ebee;
+
+  /* Tokens sémantiques (redéfinis en mode sombre plus bas) : bg-surface, text-fg, border-border… */
+  --color-primary: #7b2033; /* bordeaux InkDesk */
+  --color-primary-hover: #6a1b2c;
+  --color-primary-soft: #f6ebee;
+  --color-primary-fg: #ffffff;
+
+  /* Accent secondaire (peu utilisé) */
+  --color-gold: #a17c33;
+  --color-gold-soft: #f4ecd8;
+
+  --color-canvas: #f4f5f7; /* gris clair — fond de l'app */
+  --color-surface: #ffffff; /* cartes / panneaux */
+  --color-surface-2: #f1f2f4; /* survols, fonds discrets */
+  --color-border: #e5e7eb; /* bordures */
+  --color-border-strong: #d1d5db;
+
+  --color-fg: #111827; /* texte principal */
+  --color-fg-muted: #6b7280; /* texte secondaire */
+  --color-fg-subtle: #9ca3af; /* placeholder / tertiaire */
+
+  --color-sidebar: #17141a; /* charbon — barre latérale */
+  --color-sidebar-2: #221e26;
+  --color-sidebar-fg: #c9c4ce;
+  --color-sidebar-muted: #837c8b;
+
+  /* Statuts (design-v4) */
+  --color-success: #16a34a;
+  --color-success-soft: #eafaf0;
+  --color-warning: #d97706;
+  --color-warning-soft: #fdf3e6;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fdecec;
+  --color-info: #2563eb;
+  --color-info-soft: #eaf1fe;
+
+  /* Compat anciens noms (encore utilisés le temps de migrer) */
+  --color-ink: #17141a;
+  --color-green: #16a34a;
+  --color-green-soft: #eafaf0;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Mode sombre : redéfinit les mêmes tokens sémantiques, donc bg-surface / text-fg / border-border…
+   basculent d'un coup. Hors @layer pour rester prioritaire sur les valeurs du thème. */
+.dark {
+  --color-primary: #c05464; /* bordeaux éclairci pour le sombre */
+  --color-primary-hover: #cf6a79;
+  --color-primary-soft: #2a171c;
+  --color-primary-fg: #ffffff;
+
+  --color-gold: #c9ab72;
+  --color-gold-soft: #2a2413;
+
+  --color-canvas: #0f0e11; /* charbon */
+  --color-surface: #17141a;
+  --color-surface-2: #221e26;
+  --color-border: #2c2731;
+  --color-border-strong: #3a343f;
+
+  --color-fg: #ececee; /* gris clair */
+  --color-fg-muted: #a1a1aa;
+  --color-fg-subtle: #6b6b74;
+
+  --color-sidebar: #0c0b0e; /* encore plus sombre */
+  --color-sidebar-2: #17141a;
+  --color-sidebar-fg: #c9c4ce;
+  --color-sidebar-muted: #7c7686;
+
+  --color-success: #4ade80;
+  --color-success-soft: #10251a;
+  --color-warning: #fbbf24;
+  --color-warning-soft: #2a2010;
+  --color-danger: #f87171;
+  --color-danger-soft: #2c1616;
+  --color-info: #60a5fa;
+  --color-info-soft: #10203a;
+
+  --color-green: #4ade80;
+  --color-green-soft: #10251a;
+}
+
+/* Police + fond/texte par défaut pilotés par les tokens. */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-canvas);
+  color: var(--color-fg);
+}
+
+/* Confort dark mode : lisibilité des champs de formulaire. */
+.dark input,
+.dark select,
+.dark textarea {
+  color: var(--color-fg);
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--color-fg-subtle);
+}
+
+/* Impression → "Enregistrer en PDF" : on masque la nav et les actions,
+   on ne garde que le contenu du document (devis / facture). */
+@media print {
+  app-sidebar,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    overflow: visible !important;
+  }
+}
