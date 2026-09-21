@@ -16,7 +16,7 @@ class Auth
 
     private static function secret()
     {
-        return Env::get('JWT_SECRET', 'tatooshop-cle-a-changer-en-production');
+        return Env::get('JWT_SECRET');
     }
 
     private static function duration()
