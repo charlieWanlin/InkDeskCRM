@@ -215,7 +215,7 @@
               (change)="changerProjet($any($event.target).value)"
               class="mt-1 h-9 w-full rounded-lg border border-transparent bg-transparent px-2 text-right text-sm font-semibold text-fg outline-none transition hover:border-border focus:border-primary focus:bg-surface"
             >
-              <option value="" [selected]="!d.projetId">— Aucun projet —</option>
+              <option value="" [selected]="!d.projetId">Aucun projet</option>
               @for (p of projets(); track p.id) {
                 <option [value]="p.id" [selected]="p.id === d.projetId">{{ p.titre }}</option>
               }

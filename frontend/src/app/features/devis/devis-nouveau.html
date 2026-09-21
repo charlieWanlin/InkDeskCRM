@@ -84,7 +84,7 @@
             formControlName="projetId"
             class="h-11 rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
-            <option [ngValue]="null">— Aucun projet —</option>
+            <option [ngValue]="null">Aucun projet</option>
             @for (p of projets(); track p.id) {
               <option [ngValue]="p.id">{{ p.titre }}</option>
             }
