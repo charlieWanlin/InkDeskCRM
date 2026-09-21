@@ -68,7 +68,7 @@ class FlashController
         }
 
         $scheme = isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'http';
-        $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost:8888';
+        $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost:8000';
         $base = $scheme . '://' . $host;
         return ['url' => "$base/uploads/flashs/$name", 'path' => "/uploads/flashs/$name"];
     }
