@@ -4,38 +4,33 @@
   Le logiciel de gestion des studios de tatouage.
 </p>
 
-<p align="center">
-  <img alt="Angular" src="https://img.shields.io/badge/Angular-22-DD0031?style=flat-square&logo=angular&logoColor=white">
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6-3178C6?style=flat-square&logo=typescript&logoColor=white">
-  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white">
-  <img alt="PHP" src="https://img.shields.io/badge/PHP-8-777BB4?style=flat-square&logo=php&logoColor=white">
-  <img alt="MySQL" src="https://img.shields.io/badge/MySQL-5.7-4479A1?style=flat-square&logo=mysql&logoColor=white">
-</p>
 
----
+
 
 ## À propos
 
-Un tatoueur indépendant travaille aujourd'hui avec un carnet, un agenda papier et des
-notes de téléphone. Les informations d'un même client se retrouvent éparpillées entre
-trois supports, et rien ne relie un rendez-vous au devis qui lui correspond.
+**InkDesk** est un CRM pour studios de tatouage : fiches clients, projets de tatouage et
+leurs séances, agenda, devis et factures réunis dans une seule application web. Chaque
+artiste dispose de son propre compte et ne voit que ses données.
 
-**InkDesk** est un CRM — un logiciel de gestion de la relation client — pensé pour ce
-métier. L'artiste y retrouve la fiche de chaque client, les projets de tatouage en cours
-avec leurs séances, l'agenda des rendez-vous, ainsi que les devis et les factures qui en
-découlent. Le tout dans une seule application web, accessible depuis un ordinateur comme
-depuis un téléphone.
+<p align="center">
+  <img alt="Tableau de bord" src="docs/screenshots/dashboard.png" width="850">
+  <br><sub>Tableau de bord : encaissements, paiements en attente et activité récente</sub>
+</p>
 
-Chaque artiste dispose de son propre compte et ne voit que ses propres données.
+<p align="center">
+  <img alt="Catalogue de flashs" src="docs/screenshots/flashs.png" width="850">
+  <br><sub>Catalogue de flashs avec statuts disponible, réservé et vendu</sub>
+</p>
 
 ## Fonctionnalités
 
-- **Clients** — fiches détaillées, recherche et filtres
-- **Projets** — suivi d'un tatouage et de ses séances
-- **Rendez-vous** — agenda des séances à venir et passées
-- **Devis et factures** — lignes, totaux, conversion d'un devis en facture
-- **Flashs** — catalogue de modèles avec envoi d'images
-- **Équipe** — gestion des membres du studio et de leurs rôles
+- **Clients** : fiches détaillées, recherche et filtres
+- **Projets** : suivi d'un tatouage et de ses séances
+- **Rendez-vous** : agenda des séances à venir et passées
+- **Devis et factures** : lignes, totaux, conversion d'un devis en facture
+- **Flashs** : catalogue de modèles avec envoi d'images
+- **Équipe** : gestion des membres du studio et de leurs rôles
 
 ## Technologies
 
@@ -48,7 +43,7 @@ Chaque artiste dispose de son propre compte et ne voit que ses propres données.
 
 ### Prérequis
 
-- **PHP 8** et **MySQL 5.7** — le plus simple est d'installer [MAMP](https://www.mamp.info)
+- **PHP 8.5** et **MySQL 8.0**, via [MAMP](https://www.mamp.info)
 - **Node.js 20** ou supérieur
 
 ### 1 · Récupérer le projet
@@ -60,14 +55,24 @@ cd inkdesk_software
 
 ### 2 · Créer la base de données
 
+Ouvrez MAMP et cliquez sur **Start Servers**. MySQL écoute alors sur le port `8889`.
+
+**Option A, par phpMyAdmin**
+
+1. Rendez-vous sur `http://localhost:8888/phpMyAdmin`
+2. Onglet **Bases de données**, créez `crm_tatooshop` avec l'interclassement `utf8mb4_general_ci`. Si elle existe déjà, passez directement à l'étape suivante
+3. Sélectionnez cette base, onglet **Importer**, envoyez `backend/database/schema.sql`
+4. Recommencez l'import avec `backend/database/seed.sql`
+
+**Option B, en ligne de commande**
+
 ```bash
-mysql -u root -p -e "CREATE DATABASE crm_tatooshop CHARACTER SET utf8mb4;"
-mysql -u root -p crm_tatooshop < backend/database/schema.sql
-mysql -u root -p crm_tatooshop < backend/database/seed.sql
+/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -h 127.0.0.1 -P 8889 -e "CREATE DATABASE IF NOT EXISTS crm_tatooshop CHARACTER SET utf8mb4;"
+/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -h 127.0.0.1 -P 8889 crm_tatooshop < backend/database/schema.sql
+/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -h 127.0.0.1 -P 8889 crm_tatooshop < backend/database/seed.sql
 ```
 
-> Avec MAMP, MySQL écoute sur le port `8889` : ajoutez `-h 127.0.0.1 -P 8889`
-> et utilisez le client `/Applications/MAMP/Library/bin/mysql`.
+L'ordre compte : `schema.sql` crée les tables, `seed.sql` les remplit.
 
 ### 3 · Configurer l'API
 
@@ -75,22 +80,29 @@ Créez le fichier `backend/.env` :
 
 ```ini
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=8889
 DB_NAME=crm_tatooshop
-DB_USER=votre_utilisateur
-DB_PASS=votre_mot_de_passe
+DB_USER=root
+DB_PASS=root
 
-JWT_SECRET=une-longue-chaine-aleatoire
+JWT_SECRET=remplacez_par_la_cle_generee
 JWT_DUREE=86400
 ```
 
-> Pour générer la clé : `openssl rand -hex 32`.
-> Ce fichier contient vos identifiants, il n'est jamais publié sur GitHub.
+Générez la clé avec la commande suivante, puis recopiez le résultat dans `JWT_SECRET` :
+
+```bash
+openssl rand -hex 32
+```
+
+Cette clé sert à signer les jetons de connexion. Le serveur vérifie la signature à chaque requête, ce qui lui permet de savoir qu'un jeton vient bien de lui et n'a pas été modifié. Elle doit donc rester propre à votre installation.
+
+`DB_PORT=8889` correspond à MAMP. Avec une installation MySQL classique, utilisez `3306`.
 
 ### 4 · Lancer l'API
 
 ```bash
-php -S localhost:8888 -t backend/public
+php -S localhost:8000 -t backend/public
 ```
 
 ### 5 · Lancer l'application
@@ -105,28 +117,18 @@ npm start
 
 L'application est disponible sur **http://localhost:4200**.
 
-### 6 · Créer son mot de passe
+### 6 · Se connecter
 
-Générez l'empreinte de votre mot de passe :
-
-```bash
-php -r 'echo password_hash("le-mot-de-passe-de-votre-choix", PASSWORD_BCRYPT), "\n";'
-```
-
-Puis enregistrez-la pour le compte administrateur :
-
-```sql
-UPDATE users SET password_hash = 'LE_RESULTAT_DE_LA_COMMANDE'
-WHERE email = 'admin@tatooshop.test';
-```
-
-Vous pouvez maintenant vous connecter.
+| Rôle | Email | Mot de passe |
+|------|-------|--------------|
+| Administrateur | `admin@tatooshop.test` | `admin123` |
+| Artiste | `camille@tatooshop.test` | `admin123` |
 
 ---
 
 <p align="center">
   <sub>
-    Développé par <strong>Charlie Wanlin</strong> — projet réalisé dans le cadre du titre
+    Développé par <strong>Charlie Wanlin</strong>, projet réalisé dans le cadre du titre
     professionnel Développeur Web &amp; Web Mobile.
   </sub>
 </p>
