@@ -101,13 +101,15 @@ Cette clé sert à signer les jetons de connexion. Le serveur vérifie la signat
 
 ### 4 · Lancer l'API
 
+Depuis la racine du projet :
+
 ```bash
 php -S localhost:8000 -t backend/public
 ```
 
 ### 5 · Lancer l'application
 
-Dans un second terminal :
+Dans un second terminal, depuis la racine du projet :
 
 ```bash
 cd frontend
